@@ -1,9 +1,14 @@
 $(function () {
-	$("#xpath").focus();
+	chrome.tabs.getSelected(null, function(tab){
+		chrome.tabs.executeScript(tab.id, {code: 'getXpath();'});
+	});
 
-	$("form").bind("submit", function () {
+	var xpathInput = $('#xpath');
+	xpathInput.focus();
+
+	$('form').bind('submit', function () {
 		chrome.tabs.getSelected(null, function(tab){
-			chrome.tabs.executeScript(tab.id, {code: "find(\"" + $("#xpath").val() + "\");"});
+			chrome.tabs.executeScript(tab.id, {code: 'find("' + xpathInput.val() + '");'});
 		});
 		return false;
 	});
