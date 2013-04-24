@@ -9,7 +9,6 @@ var xpathInput = $('#xpather-xpath');
 var xpathForm = $('#xpather-form');
 
 function init() {
-	console.log(xpather.is(":visible"))
 	if(xpather.is(":visible") == false) {
 		body.css('margin-top', '50px');
 		xpather.show();
