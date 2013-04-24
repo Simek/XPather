@@ -5,6 +5,7 @@
 	height: 50px;
 	width: 100%;
 	padding: 0 200px 0 16px;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
 	border-bottom: 1px solid #000;
 	box-sizing: border-box;
 	box-shadow: 0 4px 12px rgba(50, 50, 50, 0.5);
