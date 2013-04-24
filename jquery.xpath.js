@@ -10,7 +10,12 @@
  */
 (function ($) {
     var xp = function (xpath, contextNode) {
-        var iterator = document.evaluate(xpath, contextNode, null, XPathResult.ANY_TYPE, null);
+		try {
+			var iterator = document.evaluate(xpath, contextNode, null, XPathResult.ANY_TYPE, null);
+		} catch (Exception) {
+			return "invalid";
+		}
+
         var node = iterator.iterateNext();
         var nodes = [];
 

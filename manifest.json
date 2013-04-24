@@ -1,17 +1,28 @@
 {
-    "name": "XPather",
-    "description": "XPaths don in the right way!",
-    "version": "0.1",
+	"name": "XPather",
+	"description": "XPaths done the right way.",
+	"version": "0.2",
 
-    "browser_action": {
-        "default_title": "XPather",
-        "default_icon": "icon.png",
-        "default_popup": "popup.html"
-    },
+	"browser_action": {
+		"default_title": "XPather",
+		"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
 
-    "permissions": [
-        "tabs", "http://*/*", "https://*/*"
-    ],
+	"content_scripts": [
+		{
+			"css": ["xpather.css"],
+			"js": ["jquery.js", "jquery.xpath.js", "xpather.js"],
+			"matches": ["<all_urls>"],
+			"run_at": "document_end"
+		}
+	],
 
-    "manifest_version": 2
+	"permissions": [
+		"tabs", "<all_urls>"
+	],
+
+	"minimum_chrome_version": "22",
+	"offline_enabled": true,
+	"manifest_version": 2
 }
