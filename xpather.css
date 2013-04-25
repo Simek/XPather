@@ -4,12 +4,12 @@
 	left: 0;
 	height: 50px;
 	width: 100%;
-	padding: 0 200px 0 16px;
+	padding: 0 200px 0 52px;
 	font-family: Helvetica, Arial, Verdana, sans-serif;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #111;
 	box-sizing: border-box;
 	box-shadow: 0 4px 12px rgba(50, 50, 50, 0.5);
-	background: #222;
+	background: #222 url('chrome-extension://__MSG_@@extension_id__/img/search.png') 12px 12px no-repeat;
 	z-index: 9999;
 }
 
@@ -22,7 +22,7 @@
 	color: #fff;
 	line-height: 42px;
 	padding: 4px 0;
-	height: 50px;
+	height: 49px;
 	width: 100%;
 	box-sizing: border-box;
 	box-shadow: none;

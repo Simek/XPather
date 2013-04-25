@@ -1,39 +1,53 @@
 {
-	"name": "XPather",
-	"description": "XPaths done the right way.",
-	"version": "0.3",
+    "name": "XPather",
+    "description": "XPaths done the right way.",
+    "version": "0.3.1",
 
-	"browser_action": {
-		"default_title": "XPather",
-		"default_icon": "icon.png"
-	},
+    "browser_action": {
+        "default_title": "XPather",
+        "default_icon": {
+            "19": "img/icon19.png",
+            "38": "img/icon38.png"
+        }
+    },
 
-	"background": {
-		"scripts": ["background.js"]
-	},
+    "background": {
+        "scripts": ["background.js"],
+        "persistance": false
+    },
 
-	"commands": {
-		"_execute_browser_action": {
-			"suggested_key": {
-				"default": "Alt+X"
-			}
-		}
-	},
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Alt+X"
+            }
+        }
+    },
 
-	"content_scripts": [
-		{
-			"css": ["xpather.css"],
-			"js": ["jquery.js", "jquery.xpath.js", "xpather.js"],
-			"matches": ["<all_urls>"],
-			"run_at": "document_end"
-		}
-	],
+    "content_scripts": [
+        {
+            "css": ["xpather.css"],
+            "js": ["lib/jquery.js", "lib/jquery.xpath.js", "xpather.js"],
+            "matches": ["<all_urls>"],
+            "run_at": "document_end"
+        }
+    ],
 
-	"permissions": [
-		"background", "tabs", "<all_urls>"
-	],
+    "permissions": [
+        "background", "tabs", "<all_urls>"
+    ],
 
-	"minimum_chrome_version": "22",
-	"offline_enabled": true,
-	"manifest_version": 2
+    "icons": {
+        "16": "img/icon16.png",
+        "48": "img/icon48.png",
+        "128": "img/icon128.png"
+    },
+
+    "web_accessible_resources": [
+        "img/search.png"
+    ],
+
+    "offline_enabled": true,
+    "minimum_chrome_version": "22",
+    "manifest_version": 2
 }
