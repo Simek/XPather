@@ -9,7 +9,7 @@ var xpathInput = $('#xpather-xpath');
 var xpathForm = $('#xpather-form');
 
 function init() {
-	if(xpather.is(":visible") == false) {
+	if (xpather.is(":visible") == false) {
 		body.css('margin-top', '50px');
 		xpather.show();
 		xpathInput.focus();
@@ -51,4 +51,5 @@ function clearHighlight(nodes) {
 	$.each(nodes, function (key, value) {
 		$(value).removeClass('xpather-highlight');
 	});
+	$('*[class=""]').removeAttr('class');
 }

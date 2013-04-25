@@ -13,6 +13,11 @@
 	z-index: 9999;
 }
 
+#xpather-form {
+	margin: 0;
+	padding: 0;
+}
+
 #xpather-xpath {
 	background: #222;
 	border: 0;
@@ -46,5 +51,6 @@
 
 .xpather-highlight {
 	background: rgba(237, 194, 20, .25) !important;
-	z-index: 9999;
+	z-index: 9999 !important;
+	box-shadow: 0 0 6px rgb(170, 130, 10) !important;
 }
