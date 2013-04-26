@@ -5,7 +5,7 @@
 	left: 0;
 	height: 50px;
 	width: 100%;
-	padding: 0 200px 0 52px;
+	padding: 0 208px 0 52px;
 	font-family: Helvetica, Arial, Verdana, sans-serif;
 	border-bottom: 1px solid #111;
 	box-sizing: border-box;
@@ -82,20 +82,21 @@
 }
 
 .xpather-sidebar-entry {
+	position: relative;
 	width: 100%;
 	min-height: 39px;
-	max-height: 200px;
+	max-height: 86px;
 	box-sizing: border-box;
 	padding: 10px 16px;
-	font-size: 11px;
+	font-size: 12px;
 	line-height: 18px;
 	clear: both;
 	text-align: justify;
-	color: #eee;
 	border-bottom: 1px solid #111;
-	word-break: break-all;
+	word-wrap: break-word;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	transition: max-height 750ms;
 }
 
 .xpather-sidebar-entry:hover {
@@ -104,14 +105,26 @@
 
 .xpather-sidebar-entry:nth-child(odd) {
 	background: #1a1a1a;
+	color: #ccc;
 }
 
 .xpather-sidebar-entry:nth-child(even) {
 	background: #222;
+	color: #999;
 }
 
 .xpather-sidebar-entry-empty {
-	color: #999;
+	color: #555 !important;
+}
+
+.xpather-sidebar-entry-count {
+	position: absolute;
+	bottom: 0;
+	right: 16px;
+	font-size: 28px;
+	color: #333;
+	font-weight: 700;
+	text-shadow: 0 0 12px #000;
 }
 
 .xpather-highlight {

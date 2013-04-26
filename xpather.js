@@ -6,7 +6,7 @@ var xpatherHTML = '\
 		<div id="xpather-result"></div>\
 		<div id="xpather-sidebar-toggler"></div>\
 		</div>\
-	<div id="xpather-sidebar"></div>'
+	<div id="xpather-sidebar"></div>';
 
 var previousMatched = [];
 
@@ -55,14 +55,18 @@ function find(xpath) {
 	} else {
 		previousMatched = result;
 		if (result.length != 0) {
-			$.each(result, function (key, value) {
+			$.each(result, function (index, value) {
 				var node = $(value);
 				node.addClass('xpather-highlight');
+				var entry = $('<div class="xpather-sidebar-entry" />');
 				if(node.text().length != 0) {
-					sidebar.append($('<div class="xpather-sidebar-entry" />').text(getNodeText(node)));
+					entry.text(getNodeText(node));
 				} else {
-					sidebar.append($('<div class="xpather-sidebar-entry xpather-sidebar-entry-empty" />').text("EMPTY NODE"));
+					entry.text("EMPTY NODE");
+					entry.addClass('xpather-sidebar-entry-empty');
 				}
+				entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');
+				sidebar.append(entry);
 			});
 			resultBox.removeClass('no-results').text(result.length);
 			console.log(result);
