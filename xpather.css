@@ -9,7 +9,7 @@
 	font-family: Helvetica, Arial, Verdana, sans-serif;
 	border-bottom: 1px solid #111;
 	box-sizing: border-box;
-	box-shadow: 0 4px 12px rgba(50, 50, 50, 0.5);
+	box-shadow: 0 4px 12px rgba(50, 50, 50, .35);
 	background: #222 url('chrome-extension://__MSG_@@extension_id__/img/search.png') 12px 12px no-repeat;
 	z-index: 10000;
 }
@@ -96,11 +96,18 @@
 	word-wrap: break-word;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	transition: max-height 750ms;
+	cursor: pointer;
+	transition: max-height 400ms;
+}
+
+.xpather-sidebar-entry span {
+	position: relative;
+	z-index: 2;
 }
 
 .xpather-sidebar-entry:hover {
-	max-height: 9999px;
+	max-height: 100%;
+	background: #0c0c0c !important;
 }
 
 .xpather-sidebar-entry:nth-child(odd) {
@@ -113,24 +120,29 @@
 	color: #999;
 }
 
-.xpather-sidebar-entry-empty {
+.xpather-sidebar-entry-info {
 	color: #555 !important;
 }
 
 .xpather-sidebar-entry-count {
 	position: absolute;
-	bottom: 0;
-	right: 16px;
-	font-size: 28px;
-	color: #333;
+	bottom: 1px;
+	right: 8px;
+	font-size: 36px;
+	color: #303030;
 	font-weight: 700;
-	text-shadow: 0 0 12px #000;
 }
 
 .xpather-highlight {
 	background: rgba(237, 194, 20, .25) !important;
 	z-index: 9999 !important;
-	box-shadow: 0 0 6px rgb(170, 130, 10) !important;
+	border-bottom: 2px solid rgb(170, 130, 10) !important;
+}
+
+.xpath-important-highlight {
+	background: rgba(237, 55, 33, 0.50) !important;
+	border-bottom: 2px solid rgb(185, 55, 37) !important;
+	box-shadow: 0 0 12px rgb(185, 55, 37) !important;
 }
 
 .xpather-on {

@@ -2,4 +2,7 @@
 
 Chrome extension for XPaths operations done the right way.
 
-To toggle XPather use `Alt+X` keyboard shortcut.
+### Keyboard shortcuts
+
+`Alt+X`: toggle XPather
+`Alt+Shift`: toggle XPather Sidebar (when XPather is active)

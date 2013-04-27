@@ -9,7 +9,9 @@ var xpatherHTML = '\
 	<div id="xpather-sidebar"></div>';
 
 var previousMatched = [];
+var sidebarVisible = false;
 
+var doc = $(document);
 var body = $('body');
 body.append(xpatherHTML);
 
@@ -24,21 +26,29 @@ function init() {
 	body.toggleClass('xpather-on');
 	if (xpather.is(":visible") == false) {
 		xpather.show();
+		if (sidebarVisible) {
+			toggleSidebar();
+		}
 		xpathInput.focus();
-		xpathForm.bind('submit', function () {
+		xpathForm.on('submit', function () {
 			find(xpathInput.val());
 			return false;
 		});
-		sidebarToggler.bind('click', function () {
-			body.toggleClass('xpather-sidebar-on');
-			sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
-			sidebar.toggle();
-			return false;
+		sidebarToggler.click(function () {
+			toggleSidebar();
+		});
+		doc.keydown(function (e) {
+			if (e.altKey && e.shiftKey) {
+				toggleSidebar();
+			}
 		});
 	} else {
-		xpather.hide();
+		sidebar.is(":visible") ? sidebarVisible = true : sidebarVisible = false;
 		sidebar.hide();
+		xpather.hide();
 		body.removeClass('xpather-sidebar-on');
+		sidebarToggler.off();
+		doc.off();
 		clearHighlight(previousMatched);
 	}
 }
@@ -46,6 +56,7 @@ function init() {
 function find(xpath) {
 	if (previousMatched.length != 0) {
 		sidebar.empty();
+		sidebar.children().off();
 		clearHighlight(previousMatched);
 	}
 
@@ -58,18 +69,9 @@ function find(xpath) {
 			$.each(result, function (index, value) {
 				var node = $(value);
 				node.addClass('xpather-highlight');
-				var entry = $('<div class="xpather-sidebar-entry" />');
-				if(node.text().length != 0) {
-					entry.text(getNodeText(node));
-				} else {
-					entry.text("EMPTY NODE");
-					entry.addClass('xpather-sidebar-entry-empty');
-				}
-				entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');
-				sidebar.append(entry);
+				sidebar.append(createSidebarEntry(index, node));
 			});
 			resultBox.removeClass('no-results').text(result.length);
-			console.log(result);
 		} else {
 			resultBox.addClass('no-results').text('No results');
 		}
@@ -77,13 +79,50 @@ function find(xpath) {
 	resultBox.show();
 }
 
+function createSidebarEntry(index, node) {
+	var entry = $('<div class="xpather-sidebar-entry" />');
+	var nodeText = node.text();
+
+	if (nodeText.length != 0) {
+		entry.text(getNodeText(node)).wrapInner('<span/>');
+	} else if (!/\S/.test(nodeText)) {
+		entry.text("WHITESPACE ONLY").wrapInner('<span/>');
+		entry.addClass('xpather-sidebar-entry-info');
+	} else {
+		entry.text("EMPTY NODE").wrapInner('<span/>');
+		entry.addClass('xpather-sidebar-entry-info');
+	}
+	entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');
+
+	entry.click(function () {
+		body.animate({
+			scrollTop: getSafeOffset(node)
+		}, 750);
+		$('.xpath-important-highlight').removeClass('xpath-important-highlight')
+		node.addClass('xpath-important-highlight');
+	});
+
+	return entry;
+}
+
+function toggleSidebar() {
+	body.toggleClass('xpather-sidebar-on');
+	sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
+	sidebar.toggle();
+}
+
 function clearHighlight(nodes) {
-	$.each(nodes, function (key, value) {
+	$.each(nodes, function (index, value) {
 		$(value).removeClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
 }
 
+function getSafeOffset(node) {
+	var offsetTop = node.offset().top;
+	return  offsetTop < 150 ? 0 : offsetTop - 150;
+}
+
 function getNodeText(node) {
-	return $.trim(node.text().replace(/ +(?= )/g,' '));
+	return $.trim(node.text().replace(/ +(?= )/g, ' '));
 }
