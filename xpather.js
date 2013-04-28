@@ -24,14 +24,16 @@ var sidebarToggler = $('#xpather-sidebar-toggler');
 
 function init() {
 	body.toggleClass('xpather-on');
-	if (xpather.is(":visible") == false) {
+	if (xpather.is(':visible') == false) {
 		xpather.show();
-		if (sidebarVisible) {
-			toggleSidebar();
-		}
+		chrome.storage.local.get('sidebarVisible', function(data) {
+			if (data.sidebarVisible) {
+				toggleSidebar();
+			}
+		});
 		xpathInput.focus();
 		xpathForm.on('submit', function () {
-			find(xpathInput.val());
+			find();
 			return false;
 		});
 		sidebarToggler.click(function () {
@@ -42,24 +44,39 @@ function init() {
 				toggleSidebar();
 			}
 		});
+		xpathInput.keyup(function (e) {
+			if (!e.altKey && !e.shiftKey && !e.ctrlKey) {
+				if(xpathInput.val() != 0) {
+					if (e.keyCode == 13) {
+						clearTimeout(xpathInput.data('timer'));
+						find();
+					} else {
+						findWithDelay();
+					}
+				}
+			}
+		})
 	} else {
-		sidebar.is(":visible") ? sidebarVisible = true : sidebarVisible = false;
+		chrome.storage.local.set({sidebarVisible: sidebar.is(':visible') ? true : false});
 		sidebar.hide();
 		xpather.hide();
 		body.removeClass('xpather-sidebar-on');
+		sidebarToggler.removeClass('xpather-sidebar-toggler-active')
 		sidebarToggler.off();
+		xpathInput.off();
 		doc.off();
 		clearHighlight(previousMatched);
 	}
 }
 
-function find(xpath) {
+function find() {
 	if (previousMatched.length != 0) {
 		sidebar.empty();
 		sidebar.children().off();
 		clearHighlight(previousMatched);
 	}
 
+	var xpath = xpathInput.val();
 	var result = $.xpath(xpath);
 	if (result.selector == 'invalid') {
 		resultBox.addClass('no-results').text('Invalid XPath');
@@ -77,6 +94,16 @@ function find(xpath) {
 		}
 	}
 	resultBox.show();
+}
+
+function findWithDelay() {
+	var delay = 700;
+
+	clearTimeout(xpathInput.data('timer'));
+	xpathInput.data('timer', setTimeout(function () {
+		xpathInput.removeData('timer');
+		find();
+	}, delay));
 }
 
 function createSidebarEntry(index, node) {

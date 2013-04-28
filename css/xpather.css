@@ -12,6 +12,7 @@
 	box-shadow: 0 4px 12px rgba(50, 50, 50, .35);
 	background: #222 url('chrome-extension://__MSG_@@extension_id__/img/search.png') 12px 12px no-repeat;
 	z-index: 10000;
+	text-shadow: none;
 }
 
 #xpather-form {
@@ -79,6 +80,7 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	font-family: Helvetica, Arial, Verdana, sans-serif;
+	text-shadow: none;
 }
 
 .xpather-sidebar-entry {
