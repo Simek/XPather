@@ -84,15 +84,15 @@
 #xpather-sidebar-entries {
 	width: 100%;
 	height: 100%;
-	display: inline-block;
+	display: block;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
 #xpather-sidebar-spacer {
 	width: 100%;
-	height: 47px;
-	display: inline-block;
+	height: 50px;
+	display: block;
 }
 
 .xpather-sidebar-entry {
