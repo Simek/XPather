@@ -1,12 +1,15 @@
 var xpatherHTML = '\
 	<div id="xpather">\
 		<form id="xpather-form">\
-			<input id="xpather-xpath" type="text" />\
+			<input id="xpather-xpath" type="text" autocomplete="off" />\
 		</form> \
 		<div id="xpather-result"></div>\
 		<div id="xpather-sidebar-toggler"></div>\
-		</div>\
-	<div id="xpather-sidebar"></div>';
+	</div>\
+	<div id="xpather-sidebar">\
+		<div id="xpather-sidebar-spacer"></div>\
+		<div id="xpather-sidebar-entries"></div>\
+	</div>';
 
 var previousMatched = [];
 var sidebarVisible = false;
@@ -20,13 +23,14 @@ var resultBox = $('#xpather-result');
 var xpathInput = $('#xpather-xpath');
 var xpathForm = $('#xpather-form');
 var sidebar = $('#xpather-sidebar');
+var sidebarEntries = $('#xpather-sidebar-entries');
 var sidebarToggler = $('#xpather-sidebar-toggler');
 
 function init() {
 	body.toggleClass('xpather-on');
 	if (xpather.is(':visible') == false) {
 		xpather.show();
-		chrome.storage.local.get('sidebarVisible', function(data) {
+		chrome.storage.local.get('sidebarVisible', function (data) {
 			if (data.sidebarVisible) {
 				toggleSidebar();
 			}
@@ -46,7 +50,7 @@ function init() {
 		});
 		xpathInput.keyup(function (e) {
 			if (!e.altKey && !e.shiftKey && !e.ctrlKey) {
-				if(xpathInput.val() != 0) {
+				if (xpathInput.val() != 0) {
 					if (e.keyCode == 13) {
 						clearTimeout(xpathInput.data('timer'));
 						find();
@@ -71,8 +75,7 @@ function init() {
 
 function find() {
 	if (previousMatched.length != 0) {
-		sidebar.empty();
-		sidebar.children().off();
+		sidebarEntries.empty();
 		clearHighlight(previousMatched);
 	}
 
@@ -86,7 +89,7 @@ function find() {
 			$.each(result, function (index, value) {
 				var node = $(value);
 				node.addClass('xpather-highlight');
-				sidebar.append(createSidebarEntry(index, node));
+				sidebarEntries.append(createSidebarEntry(index, node));
 			});
 			resultBox.removeClass('no-results').text(result.length);
 		} else {

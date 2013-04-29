@@ -11,7 +11,7 @@
 	box-sizing: border-box;
 	box-shadow: 0 4px 12px rgba(50, 50, 50, .35);
 	background: #222 url('chrome-extension://__MSG_@@extension_id__/img/search.png') 12px 12px no-repeat;
-	z-index: 10000;
+	z-index: 100000;
 	text-shadow: none;
 }
 
@@ -72,15 +72,27 @@
 	width: 20%;
 	height: 100%;
 	box-sizing: border-box;
-	top: 50px;
 	padding-bottom: 50px;
 	background: #111;
 	z-index: 10000;
 	display: none;
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow: hidden;
 	font-family: Helvetica, Arial, Verdana, sans-serif;
 	text-shadow: none;
+}
+
+#xpather-sidebar-entries {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#xpather-sidebar-spacer {
+	width: 100%;
+	height: 47px;
+	display: inline-block;
 }
 
 .xpather-sidebar-entry {
@@ -137,7 +149,7 @@
 
 .xpather-highlight {
 	background: rgba(237, 194, 20, .25) !important;
-	z-index: 9999 !important;
+	z-index: 99999 !important;
 	border-bottom: 2px solid rgb(170, 130, 10) !important;
 }
 
