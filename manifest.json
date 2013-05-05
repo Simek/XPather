@@ -1,7 +1,7 @@
 {
 	"name": "XPather",
 	"description": "XPaths done the right way.",
-	"version": "0.4.2",
+	"version": "0.5.0",
 
 	"browser_action": {
 		"default_title": "XPather",
@@ -32,6 +32,8 @@
 			"run_at": "document_end"
 		}
 	],
+
+	"devtools_page": "xpather-devtools.html",
 
 	"permissions": [
 		"background", "storage", "tabs", "<all_urls>"
