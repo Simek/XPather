@@ -69,26 +69,31 @@ function init() {
 		sidebarToggler.off();
 		xpathInput.off();
 		doc.off();
-		clearHighlight(previousMatched);
+		clearHighlight();
 	}
 }
 
 function find() {
 	if (previousMatched.length != 0) {
 		sidebarEntries.empty();
-		clearHighlight(previousMatched);
+		clearHighlight();
 	}
 
 	var xpath = xpathInput.val();
 	var result = $.xpath(xpath);
+
 	if (result.selector == 'invalid') {
 		resultBox.addClass('no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
 		if (result.length != 0) {
-			$.each(result, function (index, value) {
-				var node = $(value);
-				node.addClass('xpather-highlight');
+			$.each(result, function (index, element) {
+				var node = $(element);
+				if (node[0].nodeName == '#text') {
+					node.wrap('<bdi class="xpather-text-hightlight"/>')
+				} else {
+					node.addClass('xpather-highlight');
+				}
 				sidebarEntries.append(createSidebarEntry(index, node));
 			});
 			resultBox.removeClass('no-results').text(result.length);
@@ -111,9 +116,12 @@ function findWithDelay() {
 
 function createSidebarEntry(index, node) {
 	var entry = $('<div class="xpather-sidebar-entry" />');
-	var nodeText = node.text();
+	var nodeText = node.text().trim();
 
-	if (nodeText.length != 0) {
+	if (nodeHasOnlyImage(node) && nodeText.length == 0) {
+		entry.text("IMAGE ONLY").wrapInner('<span/>');
+		entry.addClass('xpather-sidebar-entry-info');
+	} else if (nodeText.length != 0) {
 		entry.text(getNodeText(node)).wrapInner('<span/>');
 	} else if (!/\S/.test(nodeText)) {
 		entry.text("WHITESPACE ONLY").wrapInner('<span/>');
@@ -128,7 +136,7 @@ function createSidebarEntry(index, node) {
 		body.animate({
 			scrollTop: getSafeOffset(node)
 		}, 750);
-		$('.xpath-important-highlight').removeClass('xpath-important-highlight')
+		clearImportantHighlight();
 		node.addClass('xpath-important-highlight');
 	});
 
@@ -141,11 +149,37 @@ function toggleSidebar() {
 	sidebar.toggle();
 }
 
-function clearHighlight(nodes) {
-	$.each(nodes, function (index, value) {
-		$(value).removeClass('xpather-highlight');
+function clearHighlight() {
+	clearImportantHighlight();
+	unwrapMatchedText();
+	$.each(previousMatched, function (index, element) {
+		$(element).removeClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
+}
+
+function clearImportantHighlight() {
+	$('.xpath-important-highlight').removeClass('xpath-important-highlight');
+}
+
+function unwrapMatchedText() {
+	$('.xpather-text-hightlight').each(function(index, element) {
+		$(element).replaceWith($(element).text());
+	});
+}
+
+function nodeHasOnlyImage(node) {
+	if (node.children().length != 0) {
+		var hasOnlyImage = true;
+		node.children().each(function(index, element) {
+			if ($(element).prop('tagName').toLowerCase() != 'img') {
+				return false;
+			}
+		})
+		return hasOnlyImage;
+	} else {
+		return false;
+	}
 }
 
 function getSafeOffset(node) {

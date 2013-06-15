@@ -147,14 +147,14 @@
 	font-weight: 700;
 }
 
-.xpather-highlight {
-	background: rgba(237, 194, 20, .25) !important;
+.xpather-highlight, .xpather-text-hightlight {
+	background-color: rgba(237, 194, 20, .25) !important;
 	z-index: 99999 !important;
 	border-bottom: 2px solid rgb(170, 130, 10) !important;
 }
 
 .xpath-important-highlight {
-	background: rgba(237, 55, 33, 0.50) !important;
+	background-color: rgba(237, 55, 33, 0.50) !important;
 	border-bottom: 2px solid rgb(185, 55, 37) !important;
 	box-shadow: 0 0 12px rgb(185, 55, 37) !important;
 }
