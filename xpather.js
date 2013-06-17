@@ -169,22 +169,22 @@ function unwrapMatchedText() {
 }
 
 function nodeHasOnlyImage(node) {
-	if (node.children().length != 0) {
+	var allChildrens = node.find('*');
+	if (allChildrens.length != 0) {
 		var hasOnlyImage = true;
-		node.children().each(function(index, element) {
+		allChildrens.each(function(index, element) {
 			if ($(element).prop('tagName').toLowerCase() != 'img') {
-				return false;
+				hasOnlyImage = false;
 			}
-		})
+		});
 		return hasOnlyImage;
-	} else {
-		return false;
 	}
+	return false;
 }
 
 function getSafeOffset(node) {
 	var offsetTop = node.offset().top;
-	return  offsetTop < 150 ? 0 : offsetTop - 150;
+	return offsetTop < 150 ? 0 : offsetTop - 150;
 }
 
 function getNodeText(node) {
