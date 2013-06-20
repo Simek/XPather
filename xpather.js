@@ -90,7 +90,7 @@ function find() {
 			$.each(result, function (index, element) {
 				var node = $(element);
 				if (node[0].nodeName == '#text') {
-					node.wrap('<bdi class="xpather-text-hightlight"/>')
+					node.wrap('<xpather class="xpather-text-hightlight"/>')
 				} else {
 					node.addClass('xpather-highlight');
 				}
