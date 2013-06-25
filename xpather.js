@@ -1,22 +1,23 @@
 var xpatherHTML = '\
-	<div id="xpather">\
+	<xpather id="xpather">\
 		<form id="xpather-form">\
 			<input id="xpather-xpath" type="text" autocomplete="off" />\
 		</form> \
-		<div id="xpather-result"></div>\
-		<div id="xpather-sidebar-toggler"></div>\
-	</div>\
-	<div id="xpather-sidebar">\
-		<div id="xpather-sidebar-spacer"></div>\
-		<div id="xpather-sidebar-entries"></div>\
-	</div>';
+		<xpather id="xpather-result"></xpather>\
+		<xpather id="xpather-sidebar-toggler"></xpather>\
+	</xpather>\
+	<xpather id="xpather-sidebar">\
+		<xpather id="xpather-sidebar-spacer"></xpather>\
+		<xpather id="xpather-sidebar-entries"></xpather>\
+	</xpather>';
 
 var previousMatched = [];
 var sidebarVisible = false;
 
 var doc = $(document);
 var body = $('body');
-body.append(xpatherHTML);
+var html = $('html');
+html.append(xpatherHTML);
 
 var xpather = $('#xpather');
 var resultBox = $('#xpather-result');
@@ -27,7 +28,7 @@ var sidebarEntries = $('#xpather-sidebar-entries');
 var sidebarToggler = $('#xpather-sidebar-toggler');
 
 function init() {
-	body.toggleClass('xpather-on');
+	html.toggleClass('xpather-on');
 	if (xpather.is(':visible') == false) {
 		xpather.show();
 		chrome.storage.local.get('sidebarVisible', function (data) {
@@ -35,7 +36,6 @@ function init() {
 				toggleSidebar();
 			}
 		});
-		xpathInput.focus();
 		xpathForm.on('submit', function () {
 			find();
 			return false;
@@ -64,7 +64,7 @@ function init() {
 		chrome.storage.local.set({sidebarVisible: sidebar.is(':visible') ? true : false});
 		sidebar.hide();
 		xpather.hide();
-		body.removeClass('xpather-sidebar-on');
+		html.removeClass('xpather-sidebar-on');
 		sidebarToggler.removeClass('xpather-sidebar-toggler-active')
 		sidebarToggler.off();
 		xpathInput.off();
@@ -144,7 +144,7 @@ function createSidebarEntry(index, node) {
 }
 
 function toggleSidebar() {
-	body.toggleClass('xpather-sidebar-on');
+	html.toggleClass('xpather-sidebar-on');
 	sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
 	sidebar.toggle();
 }

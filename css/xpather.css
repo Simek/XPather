@@ -151,6 +151,7 @@
 	background-color: rgba(237, 194, 20, .25) !important;
 	z-index: 99999 !important;
 	border-bottom: 2px solid rgb(170, 130, 10) !important;
+	-webkit-filter: sepia(30%);
 }
 
 .xpath-important-highlight {
