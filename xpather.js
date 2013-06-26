@@ -1,7 +1,7 @@
 var xpatherHTML = '\
 	<xpather id="xpather">\
 		<form id="xpather-form">\
-			<input id="xpather-xpath" type="text" autocomplete="off" />\
+			<input id="xpather-xpath" type="text" placeholder="enter XPath…" autocomplete="off" />\
 		</form> \
 		<xpather id="xpather-result"></xpather>\
 		<xpather id="xpather-sidebar-toggler"></xpather>\

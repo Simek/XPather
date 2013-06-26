@@ -1,6 +1,6 @@
 # XPather
 
-Chrome extension for XPaths operations done the right way.
+Chrome extension for XPaths operations done the right way. Get it from [Chrome Web Store](https://chrome.google.com/webstore/detail/xpather/gabekepgockchhemajjahpchlnkadiac).
 
 ### Features
 
