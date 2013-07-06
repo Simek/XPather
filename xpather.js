@@ -59,7 +59,7 @@ function init() {
 					}
 				}
 			}
-		})
+		});
 	} else {
 		chrome.storage.local.set({sidebarVisible: sidebar.is(':visible') ? true : false});
 		sidebar.hide();
@@ -119,15 +119,15 @@ function createSidebarEntry(index, node) {
 	var nodeText = node.text().trim();
 
 	if (nodeHasOnlyImage(node) && nodeText.length == 0) {
-		entry.text("IMAGE ONLY").wrapInner('<span/>');
+		entry.text('IMAGE ONLY').wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-info');
 	} else if (nodeText.length != 0) {
 		entry.text(getNodeText(node)).wrapInner('<span/>');
 	} else if (!/\S/.test(nodeText)) {
-		entry.text("WHITESPACE ONLY").wrapInner('<span/>');
+		entry.text('WHITESPACE ONLY').wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-info');
 	} else {
-		entry.text("EMPTY NODE").wrapInner('<span/>');
+		entry.text('EMPTY NODE').wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-info');
 	}
 	entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');

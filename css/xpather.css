@@ -66,7 +66,7 @@
 }
 
 .xpather-sidebar-toggler-active {
-	background-position: 0 -26px;
+	background-position: 0 -26px !important;
 }
 
 #xpather-sidebar {
@@ -139,7 +139,7 @@
 }
 
 .xpather-sidebar-entry-info {
-	color: #555;
+	color: #555 !important;
 }
 
 .xpather-sidebar-entry-count {
@@ -172,4 +172,21 @@
 
 .xpather-sidebar-on {
 	width: 80%;
+}
+
+#xpather-sidebar ::-webkit-scrollbar {
+	width: 15px;
+}
+
+#xpather-sidebar ::-webkit-scrollbar-track,
+#xpather-sidebar ::-webkit-scrollbar-corner {
+	background-color: #000;
+}
+
+#xpather-sidebar ::-webkit-scrollbar-thumb {
+	background-color: #333;
+}
+
+#xpather-sidebar ::-webkit-scrollbar-button {
+	display: none;
 }
