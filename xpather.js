@@ -60,6 +60,7 @@ function init() {
 				}
 			}
 		});
+		xpathInput.focus();
 	} else {
 		chrome.storage.local.set({sidebarVisible: sidebar.is(':visible') ? true : false});
 		sidebar.hide();
