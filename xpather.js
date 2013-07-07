@@ -14,6 +14,14 @@ var xpatherHTML = '\
 var previousMatched = [];
 var sidebarVisible = false;
 
+var functionsWithShortcuts = {
+	"sw": ["starts-with"],
+	"co": ["contains"],
+	"ew": ["ends-with"],
+	"uc": ["upper-case"],
+	"lc": ["lower-case"]
+}
+
 var doc = $(document);
 var body = $('body');
 var html = $('html');
@@ -48,7 +56,7 @@ function init() {
 				toggleSidebar();
 			}
 		});
-		xpathInput.keyup(function (e) {
+		xpathInput.keydown(function (e) {
 			if (!e.altKey && !e.shiftKey && !e.ctrlKey) {
 				if (xpathInput.val() != 0) {
 					if (e.keyCode == 13) {
@@ -58,6 +66,19 @@ function init() {
 						findWithDelay();
 					}
 				}
+			} else if(e.ctrlKey && e.keyCode == 32) {
+				var xpath = xpathInput.val();
+				var caretPosition = xpathInput.caret();
+				var xpathParts = xpath.substring(0, caretPosition).split("[");
+				var keyword = xpathParts[xpathParts.length - 1];
+				$.each(functionsWithShortcuts, function (shortcut, functionName) {
+					if(keyword == shortcut) {
+						var newCaretPosition = xpath.length - caretPosition
+						xpathInput.val(xpath.substring(0, caretPosition - 2) + functionName + "()" + xpath.substring(caretPosition));
+						xpathInput.caret(xpathInput.val().length - newCaretPosition - 1)
+					}
+				})
+				return false;
 			}
 		});
 		xpathInput.focus();
