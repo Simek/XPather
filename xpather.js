@@ -1,3 +1,4 @@
+var fontsHTML = '<link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css">';
 var xpatherHTML = '\
 	<xpather id="xpather">\
 		<form id="xpather-form">\
@@ -25,6 +26,8 @@ var functionsWithShortcuts = {
 var doc = $(document);
 var body = $('body');
 var html = $('html');
+var head = $('head');
+head.append(fontsHTML);
 html.append(xpatherHTML);
 
 var xpather = $('#xpather');
