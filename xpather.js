@@ -213,9 +213,9 @@ function getNodeText(node) {
 
 function inputAutocomplete() {
 	var xpath = xpathInput.val();
+	var caretPosition = xpathInput.caret();
 	var xpathParts = xpath.substring(0, caretPosition).split("[");
 	var keyword = xpathParts[xpathParts.length - 1];
-	var caretPosition = xpathInput.caret();
 	var caretPositionOffset = 2;
 	var modified = false;
 
