@@ -27,7 +27,7 @@
 	"content_scripts": [
 		{
 			"css": ["css/xpather.css"],
-			"js": ["lib/jquery.js", "lib/jquery.xpath.js", "lib/jquery.caret.js", "xpather.js"],
+			"js": ["lib/jquery.js", "lib/jquery.xpath.js", "lib/jquery.caret.js", "lib/functions.js", "xpather.js"],
 			"matches": ["<all_urls>"],
 			"run_at": "document_end"
 		}

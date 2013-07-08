@@ -16,16 +16,16 @@ var previousMatched = [];
 var sidebarVisible = false;
 
 var functionsWithShortcuts = {
-	"sw": ["starts-with"],
-	"co": ["contains"],
-	"ew": ["ends-with"],
-	"uc": ["upper-case"],
-	"lc": ["lower-case"]
+	'sw': ['starts-with'],
+	'co': ['contains'],
+	'ew': ['ends-with'],
+	'uc': ['upper-case'],
+	'lc': ['lower-case']
 }
 
 var selectorsWithShortcuts = {
-	"@c": ["class"],
-	"@i": ["id"]
+	'@c': ['class'],
+	'@i': ['id']
 }
 
 var doc = $(document);
@@ -74,7 +74,7 @@ function init() {
 						findWithDelay();
 					}
 				}
-			} else if(e.ctrlKey && e.keyCode == 32) {
+			} else if (e.ctrlKey && e.keyCode == 32) {
 				inputAutocomplete();
 				return false;
 			}
@@ -183,16 +183,16 @@ function clearImportantHighlight() {
 }
 
 function unwrapMatchedText() {
-	$('.xpather-text-hightlight').each(function(index, element) {
+	$('.xpather-text-hightlight').each(function (index, element) {
 		$(element).replaceWith($(element).text());
 	});
 }
 
 function nodeHasOnlyImage(node) {
-	var allChildrens = node.find('*');
-	if (allChildrens.length != 0) {
+	var allChildren = node.find('*');
+	if (allChildren.length != 0) {
 		var hasOnlyImage = true;
-		allChildrens.each(function(index, element) {
+		allChildren.each(function (index, element) {
 			if ($(element).prop('tagName').toLowerCase() != 'img') {
 				hasOnlyImage = false;
 			}
@@ -214,39 +214,44 @@ function getNodeText(node) {
 function inputAutocomplete() {
 	var xpath = xpathInput.val();
 	var caretPosition = xpathInput.caret();
-	var xpathParts = xpath.substring(0, caretPosition).split("[");
+	var xpathParts = xpath.substring(0, caretPosition).split('[');
 	var keyword = xpathParts[xpathParts.length - 1];
 	var caretPositionOffset = 2;
 	var modified = false;
 
-	if(keyword.substring(0, keyword.length - 1) == "@") {
+	if (keyword.substring(0, keyword.length - 1) == '@') {
 		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
-			if(keyword == shortcut) {
-				xpathInput.val(xpath.substring(0, caretPosition - 2) + "@" + selectorName + "='']" + xpath.substring(caretPosition));
+			if (keyword == shortcut) {
+				extendShortcut("@{0}='']", selectorName);
 				modified = true;
 			}
-		})
+		});
 	} else {
 		$.each(functionsWithShortcuts, function (shortcut, functionName) {
-			if(keyword == shortcut) {
-				xpathInput.val(xpath.substring(0, caretPosition - 2) + functionName + "()]" + xpath.substring(caretPosition));
+			if (keyword == shortcut) {
+				extendShortcut("{0}()]", functionName);
 				modified = true;
 			}
-		})
+		});
 	}
 
-	if(!modified) {
-		xpathParts = xpath.substring(0, caretPosition).split("(");
+	if (!modified) {
+		xpathParts = xpath.substring(0, caretPosition).split('(');
 		keyword = xpathParts[xpathParts.length - 1];
 		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
-			if(keyword == shortcut) {
-				xpathInput.val(xpath.substring(0, caretPosition - 2) + "@" + selectorName + ", ''" + xpath.substring(caretPosition));
-				modified = true;
+			if (keyword == shortcut) {
+				extendShortcut("@{0}, ''", selectorName);
 				caretPositionOffset = 1;
 			}
-		})
+		});
 	}
 
 	var newCaretPosition = xpath.length - caretPosition;
 	xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
+}
+
+function extendShortcut(extendedText, name) {
+	var xpath = xpathInput.val();
+	var caretPosition = xpathInput.caret();
+	xpathInput.val(xpath.substring(0, caretPosition - 2) + extendedText.format(name) + xpath.substring(caretPosition));
 }
