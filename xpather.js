@@ -23,6 +23,11 @@ var functionsWithShortcuts = {
 	"lc": ["lower-case"]
 }
 
+var selectorsWithShortcuts = {
+	"@c": ["class"],
+	"@i": ["id"]
+}
+
 var doc = $(document);
 var body = $('body');
 var html = $('html');
@@ -70,17 +75,7 @@ function init() {
 					}
 				}
 			} else if(e.ctrlKey && e.keyCode == 32) {
-				var xpath = xpathInput.val();
-				var caretPosition = xpathInput.caret();
-				var xpathParts = xpath.substring(0, caretPosition).split("[");
-				var keyword = xpathParts[xpathParts.length - 1];
-				$.each(functionsWithShortcuts, function (shortcut, functionName) {
-					if(keyword == shortcut) {
-						var newCaretPosition = xpath.length - caretPosition
-						xpathInput.val(xpath.substring(0, caretPosition - 2) + functionName + "()" + xpath.substring(caretPosition));
-						xpathInput.caret(xpathInput.val().length - newCaretPosition - 1)
-					}
-				})
+				inputAutocomplete();
 				return false;
 			}
 		});
@@ -214,4 +209,44 @@ function getSafeOffset(node) {
 
 function getNodeText(node) {
 	return $.trim(node.text().replace(/ +(?= )/g, ' '));
+}
+
+function inputAutocomplete() {
+	var xpath = xpathInput.val();
+	var xpathParts = xpath.substring(0, caretPosition).split("[");
+	var keyword = xpathParts[xpathParts.length - 1];
+	var caretPosition = xpathInput.caret();
+	var caretPositionOffset = 2;
+	var modified = false;
+
+	if(keyword.substring(0, keyword.length - 1) == "@") {
+		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
+			if(keyword == shortcut) {
+				xpathInput.val(xpath.substring(0, caretPosition - 2) + "@" + selectorName + "='']" + xpath.substring(caretPosition));
+				modified = true;
+			}
+		})
+	} else {
+		$.each(functionsWithShortcuts, function (shortcut, functionName) {
+			if(keyword == shortcut) {
+				xpathInput.val(xpath.substring(0, caretPosition - 2) + functionName + "()]" + xpath.substring(caretPosition));
+				modified = true;
+			}
+		})
+	}
+
+	if(!modified) {
+		xpathParts = xpath.substring(0, caretPosition).split("(");
+		keyword = xpathParts[xpathParts.length - 1];
+		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
+			if(keyword == shortcut) {
+				xpathInput.val(xpath.substring(0, caretPosition - 2) + "@" + selectorName + ", ''" + xpath.substring(caretPosition));
+				modified = true;
+				caretPositionOffset = 1;
+			}
+		})
+	}
+
+	var newCaretPosition = xpath.length - caretPosition;
+	xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
 }
