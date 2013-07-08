@@ -217,25 +217,22 @@ function inputAutocomplete() {
 	var xpathParts = xpath.substring(0, caretPosition).split('[');
 	var keyword = xpathParts[xpathParts.length - 1];
 	var caretPositionOffset = 2;
-	var modified = false;
 
 	if (keyword.substring(0, keyword.length - 1) == '@') {
 		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
 			if (keyword == shortcut) {
 				extendShortcut("@{0}='']", selectorName);
-				modified = true;
 			}
 		});
 	} else {
 		$.each(functionsWithShortcuts, function (shortcut, functionName) {
 			if (keyword == shortcut) {
 				extendShortcut("{0}()]", functionName);
-				modified = true;
 			}
 		});
 	}
 
-	if (!modified) {
+	if (!isXPathModified(xpath)) {
 		xpathParts = xpath.substring(0, caretPosition).split('(');
 		keyword = xpathParts[xpathParts.length - 1];
 		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
@@ -246,8 +243,14 @@ function inputAutocomplete() {
 		});
 	}
 
-	var newCaretPosition = xpath.length - caretPosition;
-	xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
+	if (isXPathModified(xpath)) {
+		var newCaretPosition = xpath.length - caretPosition;
+		xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
+	}
+}
+
+function isXPathModified(xpath) {
+	return xpath != xpathInput.val();
 }
 
 function extendShortcut(extendedText, name) {
