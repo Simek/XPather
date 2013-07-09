@@ -20,12 +20,14 @@ var functionsWithShortcuts = {
 	'co': ['contains'],
 	'ew': ['ends-with'],
 	'uc': ['upper-case'],
-	'lc': ['lower-case']
+	'lc': ['lower-case'],
+	'no': ['not']
 }
 
 var selectorsWithShortcuts = {
 	'@c': ['class'],
-	'@i': ['id']
+	'@i': ['id'],
+	'@t': ['title']
 }
 
 var doc = $(document);
