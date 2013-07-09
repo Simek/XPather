@@ -18,16 +18,17 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 `Ctrl+Spacebar`: expand shortcut
 
 ### Available shortcuts
+Shortcut | XPath function
+--- | --- | ---
+`sw` | starts-with()
+`co` | contains()
+`ew` | ends-with()
+`uc` | upper-case()
+`lc` | lower-case()
+`no` | not()
 
-XPath functions:
-`sw`: starts-with,
-`co`: contains,
-`ew`: ends-with,
-`uc`: upper-case,
-`lc`: lower-case,
-`no`: not
-
-HTML attributes:
-`@c`: class,
-`@i`: id,
-`@t`: title
+Shortcut | HTML attribute
+--- | --- | ---
+`@c` | class
+`@i` | id
+`@t` | title
