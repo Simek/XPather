@@ -20,15 +20,22 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 ### Available shortcuts
 Shortcut | XPath function
 --- | --- | ---
-`sw` | starts-with()
 `co` | contains()
+`sw` | starts-with()
 `ew` | ends-with()
 `uc` | upper-case()
 `lc` | lower-case()
 `no` | not()
 
+Shortcut | HTML tag
+--- | --- | ---
+`d` | div
+`s` | span
+
 Shortcut | HTML attribute
 --- | --- | ---
 `@c` | class
+`@h` | href
 `@i` | id
+`@s` | style
 `@t` | title
