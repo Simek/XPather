@@ -53,6 +53,7 @@ function init() {
 	html.toggleClass('xpather-on');
 	if (xpather.is(':visible') == false) {
 		xpather.show();
+		correctFixedNodes();
 		chrome.storage.local.get('sidebarVisible', function (data) {
 			if (data.sidebarVisible) {
 				toggleSidebar();
@@ -176,6 +177,7 @@ function toggleSidebar() {
 }
 
 function clearHighlight() {
+	correctFixedNodes();
 	clearImportantHighlight();
 	unwrapMatchedText();
 	$.each(previousMatched, function (index, element) {
@@ -281,4 +283,12 @@ function extendShortcut(extendedText, name, caretPositionOffset) {
 
 function getKeyword(parts) {
 	return parts[parts.length - 1];
+}
+
+function correctFixedNodes() {
+	if (xpather.is(':visible') == false) {
+		body.find('.xpather-position-fix').removeClass('xpather-position-fix');
+	} else {
+		body.find(':fixed').addClass('xpather-position-fix');
+	}
 }

@@ -172,6 +172,14 @@
 	box-shadow: 0 0 12px rgb(185, 55, 37);
 }
 
+.xpather-position-fix {
+	top: 50px !important;
+}
+
+.xpather-sidebar-on .xpather-position-fix {
+	width: 80% !important;
+}
+
 .xpather-on {
 	top: 50px;
 	position: relative;
