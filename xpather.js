@@ -83,10 +83,16 @@ function init() {
 				}
 			} else if (e.ctrlKey && e.keyCode == 32) {
 				inputAutocomplete();
+				findWithDelay();
 				return false;
+			} else if (e.ctrlKey && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 90)) {
+				findWithDelay();
 			}
 		});
 		xpathInput.focus();
+		if (xpathInput.val() != 0) {
+			find();
+		}
 	} else {
 		chrome.storage.local.set({sidebarVisible: sidebar.is(':visible') ? true : false});
 		sidebar.hide();
@@ -132,7 +138,7 @@ function find() {
 }
 
 function findWithDelay() {
-	var delay = 700;
+	var delay = 400;
 
 	clearTimeout(xpathInput.data('timer'));
 	xpathInput.data('timer', setTimeout(function () {
@@ -275,7 +281,7 @@ function inputAutocomplete() {
 function extendShortcut(extendedText, name, caretPositionOffset) {
 	var xpath = xpathInput.val();
 	var caretPosition = xpathInput.caret();
-	if(caretPositionOffset === undefined) {
+	if (caretPositionOffset === undefined) {
 		caretPositionOffset = 2;
 	}
 	xpathInput.val(xpath.substring(0, caretPosition - caretPositionOffset) + extendedText.format(name) + xpath.substring(caretPosition));
