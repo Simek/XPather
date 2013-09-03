@@ -149,6 +149,10 @@
 	color: #555 !important;
 }
 
+.xpather-sidebar-entry-attribute {
+	cursor: default;
+}
+
 .xpather-sidebar-entry-count {
 	position: absolute;
 	bottom: 0;
@@ -196,7 +200,7 @@
 
 #xpather-sidebar ::-webkit-scrollbar-track,
 #xpather-sidebar ::-webkit-scrollbar-corner {
-	background-color: #00;
+	background-color: #000;
 }
 
 #xpather-sidebar ::-webkit-scrollbar-thumb {
