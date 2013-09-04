@@ -137,16 +137,16 @@ function find() {
 		if (result.length != 0) {
 			$.each(result, function (index, element) {
 				var node = $(element);
-				if (!isAttribute(node)) {
-					if (node[0].nodeName == '#text') {
-						node.wrap('<xpather class="xpather-text-hightlight"/>')
-					} else {
+				var type = defineElementType(node);
+				switch(type) {
+					case "node":
 						node.addClass('xpather-highlight');
-					}
-					sidebarEntries.append(createSidebarEntry(index, node, false));
-				} else {
-					sidebarEntries.append(createSidebarEntry(index, node, true));
+						break;
+					case "text":
+						node.wrap('<xpather class="xpather-text-hightlight"/>')
+						break;
 				}
+				sidebarEntries.append(createSidebarEntry(index, node, type));
 			});
 			resultBox.removeClass('no-results').text(result.length);
 		} else {
@@ -156,9 +156,17 @@ function find() {
 	resultBox.show();
 }
 
-function isAttribute(node) {
-	var nodeName = node[0].nodeName;
-	return nodeName == nodeName.toLowerCase();
+function defineElementType(node) {
+	var nodeType = node[0].nodeType;
+	if (nodeType == 1) {
+		return "node";
+	} else if (nodeType == 2) {
+		return "attr";
+	} else if (nodeType == 3) {
+		return "text";
+	} else {
+		return "other";
+	}
 }
 
 function findWithDelay() {
@@ -171,14 +179,13 @@ function findWithDelay() {
 	}, delay));
 }
 
-function createSidebarEntry(index, node, isAttribute) {
-	var nodeText;
+function createSidebarEntry(index, node, type) {
 	var entry = $('<div class="xpather-sidebar-entry" />');
-	if (isAttribute) {
+	if (type == "attr") {
 		entry.text(node[0].value).wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-attribute');
 	} else {
-		nodeText = node.text().trim();
+		var nodeText = node.text().trim();
 
 		if (nodeHasOnlyImage(node) && nodeText.length == 0) {
 			entry.text('IMAGE ONLY').wrapInner('<span/>');
