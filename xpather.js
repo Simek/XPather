@@ -1,40 +1,5 @@
-var xpatherHTML = '\
-	<xpather id="xpather">\
-		<form id="xpather-form">\
-			<input id="xpather-xpath" type="text" placeholder="enter XPath…" autocomplete="off" />\
-		</form> \
-		<xpather id="xpather-result"></xpather>\
-		<xpather id="xpather-sidebar-toggler"></xpather>\
-	</xpather>\
-	<xpather id="xpather-sidebar">\
-		<xpather id="xpather-sidebar-spacer"></xpather>\
-		<xpather id="xpather-sidebar-entries"></xpather>\
-	</xpather>';
-
 var previousMatched = [];
 var sidebarVisible = false;
-
-var functionsWithShortcuts = {
-	'sw': ['starts-with'],
-	'co': ['contains'],
-	'ew': ['ends-with'],
-	'uc': ['upper-case'],
-	'lc': ['lower-case'],
-	'no': ['not']
-}
-
-var selectorsWithShortcuts = {
-	'@c': ['class'],
-	'@i': ['id'],
-	'@t': ['title'],
-	'@s': ['style'],
-	'@h': ['href']
-}
-
-var tagsWithShortcuts = {
-	'd': ['div'],
-	's': ['span']
-}
 
 var doc = $(document);
 var body = $('body');
@@ -137,16 +102,15 @@ function find() {
 		if (result.length != 0) {
 			$.each(result, function (index, element) {
 				var node = $(element);
-				if (!isAttribute(node)) {
-					if (node[0].nodeName == '#text') {
-						node.wrap('<xpather class="xpather-text-hightlight"/>')
-					} else {
-						node.addClass('xpather-highlight');
-					}
-					sidebarEntries.append(createSidebarEntry(index, node, false));
-				} else {
-					sidebarEntries.append(createSidebarEntry(index, node, true));
+				var nodeType = getNodeType(node);
+
+				if (nodeType == 'text') {
+					node.wrap('<xpather class="xpather-text-hightlight"/>')
+				} else if (nodeType == 'element') {
+					node.addClass('xpather-highlight');
 				}
+
+				sidebarEntries.append(createSidebarEntry(index, node, nodeType));
 			});
 			resultBox.removeClass('no-results').text(result.length);
 		} else {
@@ -156,9 +120,22 @@ function find() {
 	resultBox.show();
 }
 
-function isAttribute(node) {
-	var nodeName = node[0].nodeName;
-	return nodeName == nodeName.toLowerCase();
+function getNodeType(node) {
+	var nodeType;
+	switch (node[0].nodeType) {
+		case 1:
+			nodeType = "element";
+			break;
+		case 2:
+			nodeType = "attribute";
+			break;
+		case 3:
+			nodeType = "text";
+			break;
+		default:
+			nodeType = "other";
+	}
+	return nodeType;
 }
 
 function findWithDelay() {
@@ -171,22 +148,23 @@ function findWithDelay() {
 	}, delay));
 }
 
-function createSidebarEntry(index, node, isAttribute) {
-	var nodeText;
+function createSidebarEntry(index, node, nodeType) {
 	var entry = $('<div class="xpather-sidebar-entry" />');
-	if (isAttribute) {
+	if (nodeType == 'attribute') {
 		entry.text(node[0].value).wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-attribute');
 	} else {
-		nodeText = node.text().trim();
-
-		if (nodeHasOnlyImage(node) && nodeText.length == 0) {
-			entry.text('IMAGE ONLY').wrapInner('<span/>');
+		var nodeText = node.text().trim();
+		if (nodeType == 'element' && hasCSSContent(node) && nodeText.length == 0) {
+			entry.text('FONT ICON').wrapInner('<span/>');
+			entry.addClass('xpather-sidebar-entry-info');
+		} else if (nodeType == 'element' && node[0].nodeName == "IMG" || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
+			entry.text('IMAGE').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
 		} else if (nodeText.length != 0) {
 			entry.text(getNodeText(node)).wrapInner('<span/>');
 		} else if (!/\S/.test(nodeText)) {
-			entry.text('WHITESPACE ONLY').wrapInner('<span/>');
+			entry.text('WHITESPACES').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
 		} else {
 			entry.text('EMPTY NODE').wrapInner('<span/>');
@@ -230,6 +208,19 @@ function unwrapMatchedText() {
 	$('.xpather-text-hightlight').each(function (index, element) {
 		$(element).replaceWith($(element).text());
 	});
+}
+
+function hasCSSContent(node) {
+	if (window.getComputedStyle(node[0],':before').content != "") {
+		return true;
+	}
+	var hasCSSContent = false;
+	node.find("*").filter(function() {
+		if (window.getComputedStyle(this,':before').content != "") {
+			hasCSSContent = true;
+		}
+	})
+	return hasCSSContent;
 }
 
 function nodeHasOnlyImage(node) {
@@ -322,9 +313,9 @@ function getKeyword(parts) {
 }
 
 function correctFixedNodes() {
-	if (xpather.is(':visible') == false) {
-		body.find('.xpather-position-fix').removeClass('xpather-position-fix');
-	} else {
+	if (xpather.is(':visible')) {
 		body.find(':fixed').addClass('xpather-position-fix');
+	} else {
+		body.find('.xpather-position-fix').removeClass('xpather-position-fix');
 	}
 }

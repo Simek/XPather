@@ -1,3 +1,15 @@
+@-webkit-keyframes blink {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:.33;
+    }
+    100% {
+        opacity:1;
+    }
+}
+
 #xpather {
 	display: none;
 	position: fixed;
@@ -170,6 +182,16 @@
 	text-shadow: none;
 }
 
+.xpath-important-highlight,
+img.xpather-highlight {
+	-webkit-transition: all .75s ease-in-out;
+	-webkit-animation-direction: normal;
+	-webkit-animation-duration: 1.5s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-name: blink;
+	-webkit-animation-timing-function: ease-in-out;
+}
+
 .xpath-important-highlight {
 	background-color: rgba(237, 55, 33, 0.50);
 	border-bottom: 2px solid rgb(185, 55, 37);
@@ -201,6 +223,7 @@
 #xpather-sidebar ::-webkit-scrollbar-track,
 #xpather-sidebar ::-webkit-scrollbar-corner {
 	background-color: #000;
+	border-radius: 10px;
 }
 
 #xpather-sidebar ::-webkit-scrollbar-thumb {

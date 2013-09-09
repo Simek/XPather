@@ -1,7 +1,7 @@
 {
 	"name": "XPather",
 	"description": "XPaths done the right way.",
-	"version": "0.6.2",
+	"version": "0.6.3",
 
 	"browser_action": {
 		"default_title": "XPather",
@@ -27,13 +27,12 @@
 	"content_scripts": [
 		{
 			"css": ["css/xpather.css"],
-			"js": ["lib/jquery.js", "lib/jquery.xpath.js", "lib/jquery.caret.js", "lib/functions.js", "xpather.js"],
-			"matches": ["<all_urls>"],
-			"run_at": "document_end"
+			"js": ["lib/jquery.js", "lib/jquery.xpath.js", "lib/jquery.caret.js", "lib/functions.js", "xpather.constants.js", "xpather.js"],
+			"matches": ["<all_urls>"]
 		}
 	],
 
-	"devtools_page": "xpather-devtools.html",
+	"devtools_page": "xpather.devtools.html",
 
 	"permissions": [
 		"background", "storage", "tabs", "<all_urls>"
