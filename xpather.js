@@ -148,17 +148,17 @@ function findWithDelay() {
 	}, delay));
 }
 
-function createSidebarEntry(index, node, nodeType) {
+function createSidebarEntry(index, node, type) {
 	var entry = $('<div class="xpather-sidebar-entry" />');
-	if (nodeType == 'attribute') {
+	if (type == 'attribute') {
 		entry.text(node[0].value).wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-attribute');
 	} else {
 		var nodeText = node.text().trim();
-		if (nodeType == 'element' && hasCSSContent(node) && nodeText.length == 0) {
+		if (type == 'element' && hasCSSContent(node) && nodeText.length == 0) {
 			entry.text('FONT ICON').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
-		} else if (nodeType == 'element' && node[0].nodeName == "IMG" || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
+		} else if (type == 'element' && node[0].nodeName == "IMG" || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
 			entry.text('IMAGE').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
 		} else if (nodeText.length != 0) {
