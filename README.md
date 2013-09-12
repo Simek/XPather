@@ -11,11 +11,11 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 
 ### Keyboard shortcuts
 
-`Alt+X`: toggle XPather
+<kbd>Alt+X</kbd> - toggle XPather
 
-`Alt+Shift`: toggle XPather Sidebar (when XPather is active)
+<kbd>Alt+Shift</kbd> - toggle XPather Sidebar (when XPather is active)
 
-`Ctrl+Spacebar`: expand shortcut
+<kbd>Ctrl+Spacebar</kbd> - expand shortcut
 
 ### Available shortcuts
 Shortcut | XPath function
