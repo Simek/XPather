@@ -37,7 +37,7 @@ var getResult = function () {
 	attributes.forEach(function (attribute) {
 		if (node.attr(attribute)) {
 			result['singleEntryXPath'] = findSingleEntryXPath(node, attribute);
-			if (result.singleEntryXPath.length != 0) {
+			if (result.singleEntryXPath != null && result.singleEntryXPath.length != 0) {
 				return;
 			}
 		}
