@@ -56,7 +56,7 @@ function init() {
 					return false;
 				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 90)) {
 					find();
-				}
+				} 
 			});
 			xpathInput.focus();
 		} else {
@@ -94,12 +94,12 @@ function find() {
 	clearHighlight();
 
 	var result = $.xpath(xpath);
+	previousXPath = xpath;
 
 	if (result.selector == 'invalid') {
 		resultBox.addClass('no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
-		previousXPath = xpath;
 		if (result.length != 0) {
 			$.each(result, function (index, element) {
 				var node = $(element);
@@ -255,39 +255,21 @@ function inputAutocomplete() {
 	var caretPositionOffset = 2;
 
 	if (keyword.substring(0, keyword.length - 1) == '@') {
-		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
-			if (keyword == shortcut) {
-				extendShortcut("@{0}='']", selectorName);
-			}
-		});
+		tryExtend(selectorsWithShortcuts, "@{0}='']", 2);
 	} else {
-		$.each(functionsWithShortcuts, function (shortcut, functionName) {
-			if (keyword == shortcut) {
-				extendShortcut("{0}()]", functionName);
-			}
-		});
+		tryExtend(functionsWithShortcuts, "{0}()]", 2);
 	}
 
 	if (!isXPathModified()) {
 		xpathParts = xpath.substring(0, caretPosition).split('(');
 		keyword = getKeyword(xpathParts);
-		$.each(selectorsWithShortcuts, function (shortcut, selectorName) {
-			if (keyword == shortcut) {
-				extendShortcut("@{0}, ''", selectorName);
-				caretPositionOffset = 1;
-			}
-		});
+		tryExtend(selectorsWithShortcuts, "@{0}, ''", 1);
 	}
 
 	if (!isXPathModified()) {
 		xpathParts = xpath.substring(0, caretPosition).split('/');
 		keyword = getKeyword(xpathParts);
-		$.each(tagsWithShortcuts, function (shortcut, tagName) {
-			if (keyword == shortcut) {
-				extendShortcut("{0}", tagName, 1);
-				caretPositionOffset = 0;
-			}
-		});
+		tryExtend(tagsWithShortcuts, "{0}", 0);
 	}
 
 	if (isXPathModified()) {
@@ -298,15 +280,19 @@ function inputAutocomplete() {
 	function isXPathModified() {
 		return xpath != xpathInput.val();
 	}
-}
 
-function extendShortcut(extendedText, name, caretPositionOffset) {
-	var xpath = xpathInput.val();
-	var caretPosition = xpathInput.caret();
-	if (caretPositionOffset === undefined) {
-		caretPositionOffset = 2;
+	function tryExtend(shotrcuts, pattern, offset) {
+		$.each(shotrcuts, function (shortcut, selectorName) {
+			if (keyword == shortcut) {
+				extendShortcut(pattern, selectorName, shortcut.length);
+				caretPositionOffset = offset;
+			}
+		});
 	}
-	xpathInput.val(xpath.substring(0, caretPosition - caretPositionOffset) + extendedText.format(name) + xpath.substring(caretPosition));
+
+	function extendShortcut(extendedText, name, caretPositionOffset) {
+		xpathInput.val(xpath.substring(0, caretPosition - caretPositionOffset) + extendedText.format(name) + xpath.substring(caretPosition));
+	}
 }
 
 function getKeyword(parts) {
