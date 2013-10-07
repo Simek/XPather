@@ -1,4 +1,5 @@
 var previousMatched = [];
+var previousXPath = "";
 var sidebarVisible = false;
 
 var doc = $(document);
@@ -40,7 +41,7 @@ function init() {
 				}
 			});
 			xpathInput.keydown(function (e) {
-				if (!e.altKey && !e.shiftKey && !e.ctrlKey) {
+				if (!e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
 					if (xpathInput.val() != 0) {
 						if (e.keyCode == 13) {
 							clearTimeout(xpathInput.data('timer'));
@@ -49,18 +50,15 @@ function init() {
 							findWithDelay();
 						}
 					}
-				} else if (e.ctrlKey && e.keyCode == 32) {
+				} else if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) {
 					inputAutocomplete();
-					findWithDelay();
+					find();
 					return false;
-				} else if (e.ctrlKey && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 90)) {
-					findWithDelay();
+				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 90)) {
+					find();
 				}
 			});
 			xpathInput.focus();
-			if (xpathInput.val() != 0) {
-				find();
-			}
 		} else {
 			chrome.storage.local.set({sidebarVisible: sidebar.is(':visible')});
 			sidebar.hide();
@@ -87,18 +85,21 @@ function isDocumentValid() {
 }
 
 function find() {
-	if (previousMatched.length != 0) {
-		sidebarEntries.empty();
-		clearHighlight();
+	var xpath = xpathInput.val();
+	if (previousXPath == xpath) {
+		return;
 	}
 
-	var xpath = xpathInput.val();
+	sidebarEntries.empty();
+	clearHighlight();
+
 	var result = $.xpath(xpath);
 
 	if (result.selector == 'invalid') {
 		resultBox.addClass('no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
+		previousXPath = xpath;
 		if (result.length != 0) {
 			$.each(result, function (index, element) {
 				var node = $(element);
@@ -107,7 +108,7 @@ function find() {
 				if (nodeType == 'text') {
 					node.wrap('<xpather class="xpather-text-hightlight"/>')
 				} else if (nodeType == 'element') {
-					node.addClass('xpather-highlight');
+					node.safeAddClass('xpather-highlight');
 				}
 
 				sidebarEntries.append(createSidebarEntry(index, node, nodeType));
@@ -195,7 +196,7 @@ function clearHighlight() {
 	clearImportantHighlight();
 	unwrapMatchedText();
 	$.each(previousMatched, function (index, element) {
-		$(element).removeClass('xpather-highlight');
+		$(element).safeRemoveClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
 }
