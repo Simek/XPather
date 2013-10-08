@@ -41,7 +41,13 @@ function init() {
 				}
 			});
 			xpathInput.keydown(function (e) {
-				if (!e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+				if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) { // CTRL/CMD + SPACE
+					inputAutocomplete();
+					find();
+					return false;
+				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 89 || e.keyCode == 90)) { // CTRL/CMD + V/X/Y/Z
+					find();
+				} else {
 					if (xpathInput.val() != 0) {
 						if (e.keyCode == 13) { // ENTER
 							clearTimeout(xpathInput.data('timer'));
@@ -50,13 +56,7 @@ function init() {
 							findWithDelay();
 						}
 					}
-				} else if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) { // CTRL/CMD + SPACE
-					inputAutocomplete();
-					find();
-					return false;
-				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 89 || e.keyCode == 90)) { // CTRL/CMD + V/X/Y/Z
-					find();
-				} 
+				}
 			});
 			xpathInput.focus();
 			if (xpathInput.val() != 0) {
