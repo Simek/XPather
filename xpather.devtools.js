@@ -4,14 +4,17 @@ var getResult = function () {
 	function findSingleEntryXPath(node, attribute) {
 		var selector = node.attr(attribute);
 		var tagName = getTagName(node);
+		var nodeIndex = node.index();
 
 		if (isSingleElement(tagName)) {
 			return createSingleEntryXPath(node);
 		} else if (isSingleElement(tagName + '[' + attribute + '="' + selector + '"]')) {
 			return createSingleEntryXPathWithAttr(node, attribute);
-		} else {
-			return null;
+		} else if (isSingleElement(tagName + '[' + nodeIndex + '"]')) {
+			return createSingleEntryXPathWithIndex(node, nodeIndex);
 		}
+
+		return null;
 	}
 
 	function getTagName(node) {
@@ -28,6 +31,10 @@ var getResult = function () {
 
 	function createSingleEntryXPathWithAttr(node, attribute) {
 		return '\/\/' + getTagName(node) + '[@' + attribute + '=\'' + node.attr(attribute) + '\']';
+	}
+
+	function createSingleEntryXPathWithIndex(node, index) {
+		return '\/\/' + getTagName(node) + '[' + index + ']';
 	}
 
 	var node = $($0);

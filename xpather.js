@@ -18,7 +18,7 @@ if(isDocumentValid()) {
 }
 
 function init() {
-	if(isDocumentValid()) {
+	if (isDocumentValid()) {
 		html.toggleClass('xpather-on');
 		if (xpather.is(':visible') == false) {
 			xpather.show();
@@ -43,22 +43,25 @@ function init() {
 			xpathInput.keydown(function (e) {
 				if (!e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
 					if (xpathInput.val() != 0) {
-						if (e.keyCode == 13) {
+						if (e.keyCode == 13) { // ENTER
 							clearTimeout(xpathInput.data('timer'));
 							find();
 						} else {
 							findWithDelay();
 						}
 					}
-				} else if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) {
+				} else if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) { // CTRL/CMD + SPACE
 					inputAutocomplete();
 					find();
 					return false;
-				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 90)) {
+				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 89 || e.keyCode == 90)) { // CTRL/CMD + V/X/Y/Z
 					find();
 				} 
 			});
 			xpathInput.focus();
+			if (xpathInput.val() != 0) {
+				find();
+			}
 		} else {
 			chrome.storage.local.set({sidebarVisible: sidebar.is(':visible')});
 			sidebar.hide();
@@ -125,16 +128,16 @@ function getNodeType(node) {
 	var nodeType;
 	switch (node[0].nodeType) {
 		case 1:
-			nodeType = "element";
+			nodeType = 'element';
 			break;
 		case 2:
-			nodeType = "attribute";
+			nodeType = 'attribute';
 			break;
 		case 3:
-			nodeType = "text";
+			nodeType = 'text';
 			break;
 		default:
-			nodeType = "other";
+			nodeType = 'other';
 	}
 	return nodeType;
 }
@@ -177,7 +180,7 @@ function createSidebarEntry(index, node, type) {
 				scrollTop: getSafeOffset(node)
 			}, 750);
 			clearImportantHighlight();
-			node.addClass('xpath-important-highlight');
+			node.safeAddClass('xpath-important-highlight');
 		});
 	}
 	entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');
@@ -202,7 +205,7 @@ function clearHighlight() {
 }
 
 function clearImportantHighlight() {
-	$('.xpath-important-highlight').removeClass('xpath-important-highlight');
+	$('.xpath-important-highlight').safeRemoveClass('xpath-important-highlight');
 }
 
 function unwrapMatchedText() {
@@ -274,7 +277,7 @@ function inputAutocomplete() {
 
 	if (isXPathModified()) {
 		var newCaretPosition = xpath.length - caretPosition;
-		xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
+		xpathInput.caret(xpath.length - newCaretPosition - caretPositionOffset);
 	}
 
 	function isXPathModified() {
