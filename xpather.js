@@ -277,7 +277,7 @@ function inputAutocomplete() {
 
 	if (isXPathModified()) {
 		var newCaretPosition = xpath.length - caretPosition;
-		xpathInput.caret(xpath.length - newCaretPosition - caretPositionOffset);
+		xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
 	}
 
 	function isXPathModified() {
