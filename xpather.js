@@ -6,9 +6,9 @@ var doc = $(document);
 var body = $('body');
 var html = $('html');
 
-if(isDocumentValid()) {
+if (isDocumentValid()) {
 	html.append(xpatherHTML);
-	var xpather = $('#xpather'); 
+	var xpather = $('#xpather');
 	var resultBox = $('#xpather-result');
 	var xpathInput = $('#xpather-xpath');
 	var xpathForm = $('#xpather-form');
@@ -175,7 +175,7 @@ function createSidebarEntry(index, node, type) {
 			entry.addClass('xpather-sidebar-entry-info');
 		}
 
-		entry.click(function() {
+		entry.click(function () {
 			body.animate({
 				scrollTop: getSafeOffset(node)
 			}, 750);
@@ -215,12 +215,12 @@ function unwrapMatchedText() {
 }
 
 function hasCSSContent(node) {
-	if (window.getComputedStyle(node[0],':before').content != "") {
+	if (window.getComputedStyle(node[0], ':before').content != "") {
 		return true;
 	}
 	var hasCSSContent = false;
-	node.find("*").filter(function() {
-		if (window.getComputedStyle(this,':before').content != "") {
+	node.find("*").filter(function () {
+		if (window.getComputedStyle(this, ':before').content != "") {
 			hasCSSContent = true;
 		}
 	})
