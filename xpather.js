@@ -2,45 +2,45 @@ var previousMatched = [];
 var previousXPath = "";
 var sidebarVisible = false;
 
-var doc = $(document);
-var body = $('body');
-var html = $('html');
+var $doc = $(document);
+var $body = $('body');
+var $html = $('html');
 
 if (isDocumentValid()) {
-	html.append(xpatherHTML);
-	var xpather = $('#xpather');
-	var resultBox = $('#xpather-result');
-	var xpathInput = $('#xpather-xpath');
-	var xpathForm = $('#xpather-form');
-	var sidebar = $('#xpather-sidebar');
-	var sidebarEntries = $('#xpather-sidebar-entries');
-	var sidebarToggler = $('#xpather-sidebar-toggler');
+	$html.append(xpatherHTML);
+	var $xpather = $('#xpather');
+	var $resultBox = $('#xpather-result');
+	var $xpathInput = $('#xpather-xpath');
+	var $xpathForm = $('#xpather-form');
+	var $sidebar = $('#xpather-sidebar');
+	var $sidebarEntries = $('#xpather-sidebar-entries');
+	var $sidebarToggler = $('#xpather-sidebar-toggler');
 }
 
 function init() {
 	if (isDocumentValid()) {
-		html.toggleClass('xpather-on');
-		if (xpather.is(':visible') == false) {
-			xpather.show();
+		$html.toggleClass('xpather-on');
+		if ($xpather.is(':not(:visible)')) {
+			$xpather.show();
 			correctFixedNodes();
 			chrome.storage.local.get('sidebarVisible', function (data) {
 				if (data.sidebarVisible) {
 					toggleSidebar();
 				}
 			});
-			xpathForm.on('submit', function () {
+			$xpathForm.on('submit', function () {
 				find();
 				return false;
 			});
-			sidebarToggler.click(function () {
+			$sidebarToggler.click(function () {
 				toggleSidebar();
 			});
-			doc.keydown(function (e) {
+			$doc.keydown(function (e) {
 				if (e.altKey && e.shiftKey) {
 					toggleSidebar();
 				}
 			});
-			xpathInput.keydown(function (e) {
+			$xpathInput.keydown(function (e) {
 				if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) { // CTRL/CMD + SPACE
 					inputAutocomplete();
 					find();
@@ -48,9 +48,9 @@ function init() {
 				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 89 || e.keyCode == 90)) { // CTRL/CMD + V/X/Y/Z
 					find();
 				} else {
-					if (xpathInput.val() != 0) {
+					if ($xpathInput.val() != 0) {
 						if (e.keyCode == 13) { // ENTER
-							clearTimeout(xpathInput.data('timer'));
+							clearTimeout($xpathInput.data('timer'));
 							find();
 						} else {
 							findWithDelay();
@@ -58,19 +58,19 @@ function init() {
 					}
 				}
 			});
-			xpathInput.focus();
-			if (xpathInput.val() != 0) {
+			$xpathInput.focus();
+			if ($xpathInput.val() != 0) {
 				find();
 			}
 		} else {
-			chrome.storage.local.set({sidebarVisible: sidebar.is(':visible')});
-			sidebar.hide();
-			xpather.hide();
-			html.removeClass('xpather-sidebar-on');
-			sidebarToggler.removeClass('xpather-sidebar-toggler-active')
-			sidebarToggler.off();
-			xpathInput.off();
-			doc.off();
+			chrome.storage.local.set({sidebarVisible: $sidebar.is(':visible')});
+			$sidebar.hide();
+			$xpather.hide();
+			$html.removeClass('xpather-sidebar-on');
+			$sidebarToggler.removeClass('xpather-sidebar-toggler-active')
+			$sidebarToggler.off();
+			$xpathInput.off();
+			$doc.off();
 			clearHighlight();
 		}
 	}
@@ -88,19 +88,19 @@ function isDocumentValid() {
 }
 
 function find() {
-	var xpath = xpathInput.val();
+	var xpath = $xpathInput.val();
 	if (previousXPath == xpath) {
 		return;
 	}
 
-	sidebarEntries.empty();
+	$sidebarEntries.empty();
 	clearHighlight();
 
 	var result = $.xpath(xpath);
 	previousXPath = xpath;
 
 	if (result.selector == 'invalid') {
-		resultBox.addClass('no-results').text('Invalid XPath');
+		$resultBox.addClass('no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
 		if (result.length != 0) {
@@ -114,14 +114,14 @@ function find() {
 					node.safeAddClass('xpather-highlight');
 				}
 
-				sidebarEntries.append(createSidebarEntry(index, node, nodeType));
+				$sidebarEntries.append(createSidebarEntry(index, node, nodeType));
 			});
-			resultBox.removeClass('no-results').text(result.length);
+			$resultBox.removeClass('no-results').text(result.length);
 		} else {
-			resultBox.addClass('no-results').text('No results');
+			$resultBox.addClass('no-results').text('No results');
 		}
 	}
-	resultBox.show();
+	$resultBox.show();
 }
 
 function getNodeType(node) {
@@ -145,9 +145,9 @@ function getNodeType(node) {
 function findWithDelay() {
 	var delay = 400;
 
-	clearTimeout(xpathInput.data('timer'));
-	xpathInput.data('timer', setTimeout(function () {
-		xpathInput.removeData('timer');
+	clearTimeout($xpathInput.data('timer'));
+	$xpathInput.data('timer', setTimeout(function () {
+		$xpathInput.removeData('timer');
 		find();
 	}, delay));
 }
@@ -176,7 +176,7 @@ function createSidebarEntry(index, node, type) {
 		}
 
 		entry.click(function () {
-			body.animate({
+			$body.animate({
 				scrollTop: getSafeOffset(node)
 			}, 750);
 			clearImportantHighlight();
@@ -189,9 +189,9 @@ function createSidebarEntry(index, node, type) {
 }
 
 function toggleSidebar() {
-	html.toggleClass('xpather-sidebar-on');
-	sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
-	sidebar.toggle();
+	$html.toggleClass('xpather-sidebar-on');
+	$sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
+	$sidebar.toggle();
 }
 
 function clearHighlight() {
@@ -251,8 +251,8 @@ function getNodeText(node) {
 }
 
 function inputAutocomplete() {
-	var xpath = xpathInput.val();
-	var caretPosition = xpathInput.caret();
+	var xpath = $xpathInput.val();
+	var caretPosition = $xpathInput.caret();
 	var xpathParts = xpath.substring(0, caretPosition).split('[');
 	var keyword = getKeyword(xpathParts);
 	var caretPositionOffset = 2;
@@ -277,11 +277,11 @@ function inputAutocomplete() {
 
 	if (isXPathModified()) {
 		var newCaretPosition = xpath.length - caretPosition;
-		xpathInput.caret(xpathInput.val().length - newCaretPosition - caretPositionOffset);
+		$xpathInput.caret($xpathInput.val().length - newCaretPosition - caretPositionOffset);
 	}
 
 	function isXPathModified() {
-		return xpath != xpathInput.val();
+		return xpath != $xpathInput.val();
 	}
 
 	function tryExtend(shotrcuts, pattern, offset) {
@@ -294,7 +294,7 @@ function inputAutocomplete() {
 	}
 
 	function extendShortcut(extendedText, name, caretPositionOffset) {
-		xpathInput.val(xpath.substring(0, caretPosition - caretPositionOffset) + extendedText.format(name) + xpath.substring(caretPosition));
+		$xpathInput.val(xpath.substring(0, caretPosition - caretPositionOffset) + extendedText.format(name) + xpath.substring(caretPosition));
 	}
 }
 
@@ -303,9 +303,9 @@ function getKeyword(parts) {
 }
 
 function correctFixedNodes() {
-	if (xpather.is(':visible')) {
-		body.find(':fixed').addClass('xpather-position-fix');
+	if ($xpather.is(':visible')) {
+		$body.find(':fixed').addClass('xpather-position-fix');
 	} else {
-		body.find('.xpather-position-fix').removeClass('xpather-position-fix');
+		$body.find('.xpather-position-fix').removeClass('xpather-position-fix');
 	}
 }
