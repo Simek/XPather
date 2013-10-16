@@ -111,7 +111,11 @@ function find() {
 				if (nodeType == 'text') {
 					node.wrap('<xpather class="xpather-text-hightlight"/>')
 				} else if (nodeType == 'element') {
-					node.safeAddClass('xpather-highlight');
+					if (sepiaFilterExcludedTags.indexOf(node.prop('tagName')) >= 0) {
+						node.safeAddClass('xpather-highlight');
+					} else {
+						node.safeAddClass('xpather-highlight-with-sepia');
+					}
 				}
 
 				$sidebarEntries.append(createSidebarEntry(index, node, nodeType));
@@ -162,7 +166,7 @@ function createSidebarEntry(index, node, type) {
 		if (type == 'element' && hasCSSContent(node) && nodeText.length == 0) {
 			entry.text('FONT ICON').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
-		} else if (type == 'element' && node[0].nodeName == "IMG" || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
+		} else if (type == 'element' && node[0].nodeName == 'IMG' || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
 			entry.text('IMAGE').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
 		} else if (nodeText.length != 0) {
@@ -199,7 +203,7 @@ function clearHighlight() {
 	clearImportantHighlight();
 	unwrapMatchedText();
 	$.each(previousMatched, function (index, element) {
-		$(element).safeRemoveClass('xpather-highlight');
+		$(element).safeRemoveClass('xpather-highlight-with-sepia').safeRemoveClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
 }
@@ -232,7 +236,7 @@ function nodeHasOnlyImage(node) {
 	if (allChildren.length != 0) {
 		var hasOnlyImage = true;
 		allChildren.each(function (index, element) {
-			if ($(element).prop('tagName').toLowerCase() != 'img') {
+			if ($(element).prop('tagName') != 'IMG') {
 				hasOnlyImage = false;
 			}
 		});

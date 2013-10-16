@@ -32,3 +32,5 @@ var tagsWithShortcuts = {
 	'd': ['div'],
 	's': ['span']
 }
+
+var sepiaFilterExcludedTags = ['P', 'SPAN', 'STRONG', 'B', 'EM', 'SMALL'];
