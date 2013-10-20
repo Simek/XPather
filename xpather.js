@@ -308,8 +308,8 @@ function getKeyword(parts) {
 
 function correctFixedNodes() {
 	if ($xpather.is(':visible')) {
-		$body.find(':fixed').addClass('xpather-position-fix');
+		$body.find(':fixed').safeAddClass('xpather-position-fix');
 	} else {
-		$body.find('.xpather-position-fix').removeClass('xpather-position-fix');
+		$body.find('.xpather-position-fix').safeRemoveClass('xpather-position-fix');
 	}
 }
