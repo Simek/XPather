@@ -100,7 +100,7 @@ function find() {
 	previousXPath = xpath;
 
 	if (result.selector == 'invalid') {
-		$resultBox.addClass('no-results').text('Invalid XPath');
+		$resultBox.addClass('xpather-no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
 		if (result.length != 0) {
@@ -120,9 +120,9 @@ function find() {
 
 				$sidebarEntries.append(createSidebarEntry(index, node, nodeType));
 			});
-			$resultBox.removeClass('no-results').text(result.length);
+			$resultBox.removeClass('xpather-no-results').text(result.length);
 		} else {
-			$resultBox.addClass('no-results').text('No results');
+			$resultBox.addClass('xpather-no-results').text('No results');
 		}
 	}
 	$resultBox.show();
