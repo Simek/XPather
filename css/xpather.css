@@ -181,10 +181,6 @@
 	text-shadow: none;
 }
 
-.xpather-highlight-with-sepia {
-	-webkit-filter: sepia(30%);
-}
-
 .xpath-important-highlight,
 img.xpather-highlight {
 	-webkit-transition: all .75s ease-in-out;

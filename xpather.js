@@ -1,12 +1,16 @@
 var previousMatched = [];
 var previousXPath = "";
-var sidebarVisible = false;
+var sidebarVisible;
+chrome.storage.sync.get('sidebarVisible', function (data) {
+	sidebarVisible = data.sidebarVisible
+});
+var isDocumentValid = checkIsDocumentValid();
 
 var $doc = $(document);
 var $body = $('body');
 var $html = $('html');
 
-if (isDocumentValid()) {
+if (isDocumentValid) {
 	$html.append(xpatherHTML);
 	var $xpather = $('#xpather');
 	var $resultBox = $('#xpather-result');
@@ -18,12 +22,12 @@ if (isDocumentValid()) {
 }
 
 function init() {
-	if (isDocumentValid()) {
+	if (isDocumentValid) {
 		$html.toggleClass('xpather-on');
-		if ($xpather.is(':not(:visible)')) {
+		if ($html.hasClass('xpather-on')) {
 			$xpather.show();
 			correctFixedNodes();
-			chrome.storage.local.get('sidebarVisible', function (data) {
+			chrome.storage.sync.get('sidebarVisible', function (data) {
 				if (data.sidebarVisible) {
 					toggleSidebar();
 				}
@@ -63,9 +67,9 @@ function init() {
 				find();
 			}
 		} else {
-			chrome.storage.local.set({sidebarVisible: $sidebar.is(':visible')});
 			$sidebar.hide();
 			$xpather.hide();
+			chrome.storage.sync.set({'sidebarVisible': $html.hasClass('xpather-sidebar-on')});
 			$html.removeClass('xpather-sidebar-on');
 			$sidebarToggler.removeClass('xpather-sidebar-toggler-active')
 			$sidebarToggler.off();
@@ -76,11 +80,16 @@ function init() {
 	}
 }
 
-function isDocumentValid() {
+function checkIsDocumentValid() {
 	var pathname = window.location.pathname.split('.');
+	var protocol = window.location.protocol;
 	var fileExtension = pathname[pathname.length - 1];
-	if (window.location.protocol == 'file:') {
+	if (protocol == 'file:') {
 		if (fileExtension != 'html') {
+			return false;
+		}
+	} else if (protocol == 'http:' || protocol == 'https:') {
+		if (fileExtension.length >= 2 && fileExtension.length <= 4 && fileExtension != 'html') {
 			return false;
 		}
 	}
@@ -111,11 +120,7 @@ function find() {
 				if (nodeType == 'text') {
 					node.wrap('<xpather class="xpather-text-hightlight"/>')
 				} else if (nodeType == 'element') {
-					if (sepiaFilterExcludedTags.indexOf(node.prop('tagName')) >= 0) {
-						node.safeAddClass('xpather-highlight');
-					} else {
-						node.safeAddClass('xpather-highlight-with-sepia');
-					}
+					node.safeAddClass('xpather-highlight');
 				}
 
 				$sidebarEntries.append(createSidebarEntry(index, node, nodeType));
@@ -180,7 +185,7 @@ function createSidebarEntry(index, node, type) {
 		}
 
 		entry.click(function () {
-			$body.animate({
+			$html.animate({
 				scrollTop: getSafeOffset(node)
 			}, 750);
 			clearImportantHighlight();
@@ -194,6 +199,9 @@ function createSidebarEntry(index, node, type) {
 
 function toggleSidebar() {
 	$html.toggleClass('xpather-sidebar-on');
+	chrome.storage.sync.set({
+		'sidebarVisible': $html.hasClass('xpather-sidebar-on')
+	});
 	$sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
 	$sidebar.toggle();
 }
@@ -203,7 +211,7 @@ function clearHighlight() {
 	clearImportantHighlight();
 	unwrapMatchedText();
 	$.each(previousMatched, function (index, element) {
-		$(element).safeRemoveClass('xpather-highlight-with-sepia').safeRemoveClass('xpather-highlight');
+		$(element).safeRemoveClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
 }
