@@ -1,7 +1,7 @@
 {
 	"name": "XPather",
 	"description": "XPaths done the right way.",
-	"version": "0.7.0-dev",
+	"version": "0.6.8",
 
 	"browser_action": {
 		"default_title": "Toggle XPather",
