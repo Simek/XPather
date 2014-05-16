@@ -1,80 +1,28 @@
-var previousMatched = [];
-var previousXPath = "";
-var sidebarVisible;
-chrome.storage.sync.get('sidebarVisible', function (data) {
-	sidebarVisible = data.sidebarVisible
-});
-var isDocumentValid = checkIsDocumentValid();
-
-var $doc = $(document);
-var $body = $('body');
-var $html = $('html');
-
-if (isDocumentValid) {
-	$html.append(xpatherHTML);
-	var $xpather = $('#xpather');
-	var $resultBox = $('#xpather-result');
-	var $xpathInput = $('#xpather-xpath');
-	var $xpathForm = $('#xpather-form');
-	var $sidebar = $('#xpather-sidebar');
-	var $sidebarEntries = $('#xpather-sidebar-entries');
-	var $sidebarToggler = $('#xpather-sidebar-toggler');
-}
-
 function init() {
+	"use strict";
 	if (isDocumentValid) {
 		$html.toggleClass('xpather-on');
-		if ($html.hasClass('xpather-on')) {
+		if (!$xpather.is(':visible')) {
 			$xpather.show();
 			correctFixedNodes();
+			setTimeout(function () {
+				$xpathInput.focus();
+			}, 0);
 			chrome.storage.sync.get('sidebarVisible', function (data) {
 				if (data.sidebarVisible) {
 					toggleSidebar();
 				}
 			});
-			$xpathForm.on('submit', function () {
-				find();
-				return false;
-			});
-			$sidebarToggler.click(function () {
-				toggleSidebar();
-			});
-			$doc.keydown(function (e) {
-				if (e.altKey && e.shiftKey) {
-					toggleSidebar();
-				}
-			});
-			$xpathInput.keydown(function (e) {
-				if ((e.ctrlKey || e.metaKey) && e.keyCode == 32) { // CTRL/CMD + SPACE
-					inputAutocomplete();
-					find();
-					return false;
-				} else if ((e.ctrlKey || e.metaKey) && (e.keyCode == 86 || e.keyCode == 88 || e.keyCode == 89 || e.keyCode == 90)) { // CTRL/CMD + V/X/Y/Z
-					find();
-				} else {
-					if ($xpathInput.val() != 0) {
-						if (e.keyCode == 13) { // ENTER
-							clearTimeout($xpathInput.data('timer'));
-							find();
-						} else {
-							findWithDelay();
-						}
-					}
-				}
-			});
-			$xpathInput.focus();
-			if ($xpathInput.val() != 0) {
+			if ($xpathInput.val() !== 0) {
 				find();
 			}
 		} else {
+			chrome.storage.sync.set({
+				'sidebarVisible': $sidebar.is(":visible")
+			});
 			$sidebar.hide();
 			$xpather.hide();
-			chrome.storage.sync.set({'sidebarVisible': $html.hasClass('xpather-sidebar-on')});
-			$html.removeClass('xpather-sidebar-on');
-			$sidebarToggler.removeClass('xpather-sidebar-toggler-active')
-			$sidebarToggler.off();
-			$xpathInput.off();
-			$doc.off();
+			$sidebarToggler.removeClass('xpather-sidebar-toggler-active');
 			clearHighlight();
 		}
 	}
@@ -84,12 +32,12 @@ function checkIsDocumentValid() {
 	var pathname = window.location.pathname.split('.');
 	var protocol = window.location.protocol;
 	var fileExtension = pathname[pathname.length - 1];
-	if (protocol == 'file:') {
-		if (fileExtension != 'html') {
+	if (protocol === 'file:') {
+		if (fileExtension !== 'html') {
 			return false;
 		}
-	} else if (protocol == 'http:' || protocol == 'https:') {
-		if (fileExtension.length >= 2 && fileExtension.length <= 4 && fileExtension != 'html') {
+	} else if (protocol === 'http:' || protocol === 'https:') {
+		if (fileExtension.length >= 2 && fileExtension.length <= 4 && fileExtension !== 'html') {
 			return false;
 		}
 	}
@@ -98,7 +46,7 @@ function checkIsDocumentValid() {
 
 function find() {
 	var xpath = $xpathInput.val();
-	if (previousXPath == xpath) {
+	if (previousXPath === xpath) {
 		return;
 	}
 
@@ -108,18 +56,18 @@ function find() {
 	var result = $.xpath(xpath);
 	previousXPath = xpath;
 
-	if (result.selector == 'invalid') {
+	if (result.selector === 'invalid') {
 		$resultBox.addClass('xpather-no-results').text('Invalid XPath');
 	} else {
 		previousMatched = result;
-		if (result.length != 0) {
+		if (result.length !== 0) {
 			$.each(result, function (index, element) {
 				var node = $(element);
 				var nodeType = getNodeType(node);
 
-				if (nodeType == 'text') {
+				if (nodeType === 'text') {
 					node.wrap('<xpather class="xpather-text-hightlight"/>')
-				} else if (nodeType == 'element') {
+				} else if (nodeType === 'element') {
 					node.safeAddClass('xpather-highlight');
 				}
 
@@ -163,18 +111,18 @@ function findWithDelay() {
 
 function createSidebarEntry(index, node, type) {
 	var entry = $('<div class="xpather-sidebar-entry" />');
-	if (type == 'attribute') {
+	if (type === 'attribute') {
 		entry.text(node[0].value).wrapInner('<span/>');
 		entry.addClass('xpather-sidebar-entry-attribute');
 	} else {
 		var nodeText = node.text().trim();
-		if (type == 'element' && hasCSSContent(node) && nodeText.length == 0) {
+		if (type === 'element' && hasCSSContent(node) && nodeText.length === 0) {
 			entry.text('FONT ICON').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
-		} else if (type == 'element' && node[0].nodeName == 'IMG' || (nodeHasOnlyImage(node) && nodeText.length == 0)) {
+		} else if (type === 'element' && node[0].nodeName === 'IMG' || (nodeHasOnlyImage(node) && nodeText.length === 0)) {
 			entry.text('IMAGE').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
-		} else if (nodeText.length != 0) {
+		} else if (nodeText.length !== 0) {
 			entry.text(getNodeText(node)).wrapInner('<span/>');
 		} else if (!/\S/.test(nodeText)) {
 			entry.text('WHITESPACES').wrapInner('<span/>');
@@ -198,12 +146,11 @@ function createSidebarEntry(index, node, type) {
 }
 
 function toggleSidebar() {
-	$html.toggleClass('xpather-sidebar-on');
-	chrome.storage.sync.set({
-		'sidebarVisible': $html.hasClass('xpather-sidebar-on')
-	});
 	$sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
 	$sidebar.toggle();
+	chrome.storage.sync.set({
+		'sidebarVisible': $sidebar.is(':visible')
+	});
 }
 
 function clearHighlight() {
@@ -227,12 +174,12 @@ function unwrapMatchedText() {
 }
 
 function hasCSSContent(node) {
-	if (window.getComputedStyle(node[0], ':before').content != "") {
+	if (window.getComputedStyle(node[0], ':before').content != '') {
 		return true;
 	}
 	var hasCSSContent = false;
-	node.find("*").filter(function () {
-		if (window.getComputedStyle(this, ':before').content != "") {
+	node.find('*').filter(function () {
+		if (window.getComputedStyle(this, ':before').content != '') {
 			hasCSSContent = true;
 		}
 	})
@@ -241,7 +188,7 @@ function hasCSSContent(node) {
 
 function nodeHasOnlyImage(node) {
 	var allChildren = node.find('*');
-	if (allChildren.length != 0) {
+	if (allChildren.length !== 0) {
 		var hasOnlyImage = true;
 		allChildren.each(function (index, element) {
 			if ($(element).prop('tagName') != 'IMG') {
@@ -269,7 +216,7 @@ function inputAutocomplete() {
 	var keyword = getKeyword(xpathParts);
 	var caretPositionOffset = 2;
 
-	if (keyword.substring(0, keyword.length - 1) == '@') {
+	if (keyword.substring(0, keyword.length - 1) === '@') {
 		tryExtend(selectorsWithShortcuts, "@{0}='']", 2);
 	} else {
 		tryExtend(functionsWithShortcuts, "{0}()]", 2);
@@ -320,4 +267,61 @@ function correctFixedNodes() {
 	} else {
 		$body.find('.xpather-position-fix').safeRemoveClass('xpather-position-fix');
 	}
+}
+
+var previousMatched = [];
+var previousXPath = "";
+var isDocumentValid = checkIsDocumentValid();
+
+var $doc = $(document);
+var $body = $('body');
+var $html = $('html');
+
+if (isDocumentValid) {
+	$html.append(xpatherHTML);
+	var $xpather = $('#xpather');
+	var $resultBox = $('#xpather-result');
+	var $xpathInput = $('#xpather-xpath');
+	var $xpathForm = $('#xpather-form');
+	var $sidebar = $('#xpather-sidebar');
+	var $sidebarEntries = $('#xpather-sidebar-entries');
+	var $sidebarToggler = $('#xpather-sidebar-toggler');
+
+	$xpathForm.on('submit', function () {
+		"use strict";
+		find();
+		return false;
+	});
+
+	$sidebarToggler.click(function () {
+		"use strict";
+		toggleSidebar();
+	});
+
+	$doc.keydown(function (e) {
+		"use strict";
+		if (e.altKey && e.shiftKey) {
+			toggleSidebar();
+		}
+	});
+
+	$xpathInput.keydown(function (e) {
+		"use strict";
+		if ((e.ctrlKey || e.metaKey) && e.keyCode === 32) { // CTRL/CMD + SPACE
+			inputAutocomplete();
+			find();
+			return false;
+		} else if ((e.ctrlKey || e.metaKey) && (e.keyCode === 86 || e.keyCode === 88 || e.keyCode === 89 || e.keyCode === 90)) { // CTRL/CMD + V/X/Y/Z
+			find();
+		} else {
+			if ($xpathInput.val() !== 0) {
+				if (e.keyCode === 13) { // ENTER
+					clearTimeout($xpathInput.data('timer'));
+					find();
+				} else {
+					findWithDelay();
+				}
+			}
+		}
+	});
 }

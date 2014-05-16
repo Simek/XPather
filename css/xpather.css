@@ -1,15 +1,3 @@
-@-webkit-keyframes blink {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: .65;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
 #xpather {
 	display: none;
 	position: fixed;
@@ -91,7 +79,7 @@
 	height: 100%;
 	box-sizing: border-box;
 	padding-bottom: 50px;
-	background: #111;
+	background: rgba(16,16,16,.95);
 	z-index: 100000;
 	display: none;
 	overflow: hidden;
@@ -200,17 +188,9 @@ img.xpather-highlight {
 	top: 50px !important;
 }
 
-.xpather-sidebar-on .xpather-position-fix {
-	width: 80% !important;
-}
-
 .xpather-on {
 	top: 50px;
 	position: relative;
-}
-
-.xpather-sidebar-on {
-	width: 80%;
 }
 
 #xpather-sidebar ::-webkit-scrollbar {
