@@ -4,7 +4,8 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 
 ### Features
 
-- evaluating XPath (using [jQuery XPath](http://github.com/jfirebaugh/jquery-xpath)), so forget about not working expressions
+- evaluating XPath on current document (using [jQuery XPath](https://github.com/ilinsky/jquery-xpath))
+- evaluating XPath 2.0 queries and expresions
 - matched nodes content preview in sidebar
 - functions and attributes shortcuts
 - scroll viewport to selected node
@@ -15,7 +16,7 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 
 <kbd>Alt+Shift</kbd> - toggle XPather Sidebar (when XPather is active)
 
-<kbd>Ctrl+Spacebar</kbd> - expand shortcut
+<kbd>Ctrl+Spacebar</kbd> or <kbd>Cmd+Spacebar</kbd> - expand shortcut
 
 ### Available shortcuts
 Shortcut | XPath function

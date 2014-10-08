@@ -138,8 +138,8 @@
 }
 
 .xpather-sidebar-entry:nth-child(even) {
-	 color: #999;
- }
+	color: #999;
+}
 
 .xpather-sidebar-entry:last-child {
 	margin-bottom: 16px;

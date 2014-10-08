@@ -53,14 +53,19 @@ function find() {
 	$sidebarEntries.empty();
 	clearHighlight();
 
-	var result = $.xpath(xpath);
-	previousXPath = xpath;
+	var result;
+	try {
+		result = $doc.xpath(xpath);
+	} catch(e) {
+		$resultBox.addClass('xpather-no-results').text('Invalid XPath').attr("title", e.message);
+		return;
+	}
 
-	if (result.selector === 'invalid') {
-		$resultBox.addClass('xpather-no-results').text('Invalid XPath');
-	} else {
-		previousMatched = result;
-		if (result.length !== 0) {
+	previousXPath = xpath;
+	previousMatched = result;
+
+	if (result.length !== 0) {
+		if (result[0] instanceof Object) {
 			$.each(result, function (index, element) {
 				var node = $(element);
 				var nodeType = getNodeType(node);
@@ -75,9 +80,12 @@ function find() {
 			});
 			$resultBox.removeClass('xpather-no-results').text(result.length);
 		} else {
-			$resultBox.addClass('xpather-no-results').text('No results');
+			$resultBox.removeClass('xpather-no-results').text(result[0]);
 		}
+	} else {
+		$resultBox.addClass('xpather-no-results').text('No results');
 	}
+
 	$resultBox.show();
 }
 
@@ -269,15 +277,16 @@ function correctFixedNodes() {
 	}
 }
 
-var previousMatched = [];
-var previousXPath = "";
 var isDocumentValid = checkIsDocumentValid();
 
-var $doc = $(document);
-var $body = $('body');
-var $html = $('html');
-
 if (isDocumentValid) {
+	var previousMatched = [];
+	var previousXPath = "";
+
+	var $doc = $(document);
+	var $body = $('body');
+	var $html = $('html');
+
 	$html.append(xpatherHTML);
 	var $xpather = $('#xpather');
 	var $resultBox = $('#xpather-result');
