@@ -32,12 +32,24 @@ function checkIsDocumentValid() {
 	var pathname = window.location.pathname.split('.');
 	var protocol = window.location.protocol;
 	var fileExtension = pathname[pathname.length - 1];
-	if (protocol === 'file:') {
-		if (fileExtension !== 'html') {
+
+	var req = new XMLHttpRequest();
+	req.open('GET', document.location, false);
+	req.send(null, function () {
+		console.log("closed")
+	});
+	var contentType = req.getResponseHeader('content-type')
+
+	if (contentType) {
+		if (contentType.toLowerCase().indexOf('text/html') === -1) {
 			return false;
 		}
-	} else if (protocol === 'http:' || protocol === 'https:') {
-		if (fileExtension.length >= 2 && fileExtension.length <= 4 && fileExtension !== 'html') {
+	} else {
+		if (protocol === 'file:') {
+			if (fileExtension !== 'html') {
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
