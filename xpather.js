@@ -35,9 +35,7 @@ function checkIsDocumentValid() {
 
 	var req = new XMLHttpRequest();
 	req.open('GET', document.location, false);
-	req.send(null, function () {
-		console.log("closed")
-	});
+	req.send(null);
 	var contentType = req.getResponseHeader('content-type')
 
 	if (contentType) {
