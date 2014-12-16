@@ -32,6 +32,8 @@
 	padding: 6px 0 2px;
 	height: 44px;
 	width: 100%;
+	min-width: 100%;
+	max-width: 100%;
 	box-sizing: border-box;
 	box-shadow: none;
 	outline: 0;
