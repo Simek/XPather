@@ -3,7 +3,7 @@
 	"description": "XPaths done the right way.",
 	"author": "Bartek 'Simek' Kaszubowski",
 	"homepage_url": "https://github.com/Simek/XPather",
-	"version": "0.6.8",
+	"version": "0.7.0",
 
 	"browser_action": {
 		"default_title": "Toggle XPather",
