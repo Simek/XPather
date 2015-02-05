@@ -30,27 +30,8 @@ function init() {
 }
 
 function checkIsDocumentValid() {
-	var pathname = window.location.pathname.split('.');
-	var protocol = window.location.protocol;
-	var fileExtension = pathname[pathname.length - 1];
-
-	var req = new XMLHttpRequest();
-	req.open('GET', document.location, false);
-	req.send(null);
-	var contentType = req.getResponseHeader('content-type')
-
-	if (contentType) {
-		if (contentType.toLowerCase().indexOf('text/html') === -1) {
-			return false;
-		}
-	} else {
-		if (protocol === 'file:') {
-			if (fileExtension !== 'html') {
-				return false;
-			}
-		} else {
-			return false;
-		}
+	if (document.contentType.indexOf('text/html') === -1) {
+		return false;
 	}
 	return true;
 }
@@ -278,8 +259,8 @@ function getKeyword(parts) {
 	return parts[parts.length - 1];
 }
 
-function isTopAttached(node) {
-  return $(node).css('top') === 0;
+function isTopAttached() {
+	return $(this).css('top') === 0;
 }
 
 function correctFixedNodes() {

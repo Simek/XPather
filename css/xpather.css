@@ -196,7 +196,7 @@
 
 .xpath-important-highlight,
 img.xpather-highlight {
-    -webkit-animation-name: blink;
+    -webkit-animation-name: xpatherBlink;
 	-webkit-animation-duration: 2s;
 	-webkit-animation-timing-function: linear;
 	-webkit-animation-iteration-count: infinite;
@@ -235,7 +235,7 @@ img.xpather-highlight {
 	display: none;
 }
 
-@-webkit-keyframes blink {  
+@-webkit-keyframes xpatherBlink {  
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
