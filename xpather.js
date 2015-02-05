@@ -7,7 +7,7 @@ function init() {
 			correctFixedNodes();
 			setTimeout(function () {
 				$xpathInput.focus();
-			}, 0);
+			}, 1);
 			chrome.storage.sync.get('sidebarVisible', function (data) {
 				if (data.sidebarVisible) {
 					toggleSidebar();
@@ -24,6 +24,7 @@ function init() {
 			$xpather.hide();
 			$sidebarToggler.removeClass('xpather-sidebar-toggler-active');
 			clearHighlight();
+			correctFixedNodes();
 		}
 	}
 }
@@ -118,13 +119,11 @@ function getNodeType(node) {
 }
 
 function findWithDelay() {
-	var delay = 400;
-
 	clearTimeout($xpathInput.data('timer'));
 	$xpathInput.data('timer', setTimeout(function () {
 		$xpathInput.removeData('timer');
 		find();
-	}, delay));
+	}, 400));
 }
 
 function createSidebarEntry(index, node, type) {
@@ -142,6 +141,9 @@ function createSidebarEntry(index, node, type) {
 			entry.addClass('xpather-sidebar-entry-info');
 		} else if (nodeText.length !== 0) {
 			entry.text(getNodeText(node)).wrapInner('<span/>');
+			if (nodeText.length > 220) {
+				entry.append('<div class="xpather-sidebar-entry-fade" />');
+			}
 		} else if (!/\S/.test(nodeText)) {
 			entry.text('WHITESPACES').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
@@ -150,10 +152,8 @@ function createSidebarEntry(index, node, type) {
 			entry.addClass('xpather-sidebar-entry-info');
 		}
 
-		entry.click(function () {
-			$html.animate({
-				scrollTop: getSafeOffset(node)
-			}, 750);
+		entry.bind('click', function () {
+			$.scrollTo(node, 500, {offset: -80});
 			clearImportantHighlight();
 			node.safeAddClass('xpath-important-highlight');
 		});
@@ -172,7 +172,6 @@ function toggleSidebar() {
 }
 
 function clearHighlight() {
-	correctFixedNodes();
 	clearImportantHighlight();
 	unwrapMatchedText();
 	$.each(previousMatched, function (index, element) {
@@ -224,7 +223,7 @@ function getSafeOffset(node) {
 }
 
 function getNodeText(node) {
-	return $.trim(node.text().replace(/ +(?= )/g, ' '));
+	return $.trim(node.text().replace(/\s+/g, ' '));
 }
 
 function inputAutocomplete() {
@@ -279,9 +278,13 @@ function getKeyword(parts) {
 	return parts[parts.length - 1];
 }
 
+function isTopAttached(node) {
+  return node.css('top') === 0;
+}
+
 function correctFixedNodes() {
 	if ($xpather.is(':visible')) {
-		$body.find(':fixed').safeAddClass('xpather-position-fix');
+		$body.find(':fixed').filter(isTopAttached).safeAddClass('xpather-position-fix');
 	} else {
 		$body.find('.xpather-position-fix').safeRemoveClass('xpather-position-fix');
 	}
