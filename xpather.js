@@ -279,7 +279,7 @@ function getKeyword(parts) {
 }
 
 function isTopAttached(node) {
-  return node.css('top') === 0;
+  return $(node).css('top') === 0;
 }
 
 function correctFixedNodes() {
