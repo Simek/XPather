@@ -81,7 +81,7 @@
 	height: 100%;
 	box-sizing: border-box;
 	padding-bottom: 50px;
-	background: rgba(16, 16, 16, .95);
+	background: rgb(16, 16, 16);
 	z-index: 100000;
 	display: none;
 	overflow: hidden;
@@ -147,7 +147,7 @@
 	display: block;
 	background: linear-gradient(
 		transparent 0%,
-		rgb(28, 28, 28) 100%
+		rgb(16, 16, 16) 100%
 	);
 	transition: display 300ms;
 }
@@ -185,7 +185,6 @@
 	font-size: 30px;
 	color: #222;
 	font-weight: 700;
-	z-index: 3;
 }
 
 .xpather-highlight, .xpather-highlight-with-sepia, .xpather-text-hightlight {
