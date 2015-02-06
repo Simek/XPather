@@ -14,11 +14,14 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 
 <kbd>Alt+X</kbd> - toggle XPather
 
-<kbd>Alt+Shift</kbd> - toggle XPather Sidebar (when XPather is active)
+<kbd>Alt+Shift+X</kbd> - toggle XPather Sidebar (when XPather is active)
 
-<kbd>Ctrl+Spacebar</kbd> or <kbd>Cmd+Spacebar</kbd> - expand shortcut
+<kbd>Alt+Z</kbd> - autocomplete XPather input
+
+All shortcuts are customizable using "Keyboard Shortcuts" option located on the bottom of Chrome extensions page (chrome://extensions).
 
 ### Available shortcuts
+
 Shortcut | XPath function
 --- | --- | ---
 `co` | contains()

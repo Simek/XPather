@@ -162,11 +162,13 @@ function createSidebarEntry(index, node, type) {
 }
 
 function toggleSidebar() {
-	$sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
-	$sidebar.toggle();
-	chrome.storage.sync.set({
-		'sidebarVisible': $sidebar.is(':visible')
-	});
+	if ($xpather.is(':visible')) {
+		$sidebarToggler.toggleClass('xpather-sidebar-toggler-active');
+		$sidebar.toggle();
+		chrome.storage.sync.set({
+			'sidebarVisible': $sidebar.is(':visible')
+		});
+	}
 }
 
 function clearHighlight() {
@@ -254,6 +256,8 @@ function inputAutocomplete() {
 		$xpathInput.caret($xpathInput.val().length - newCaretPosition - caretPositionOffset);
 	}
 
+	find();
+
 	function isXPathModified() {
 		return xpath != $xpathInput.val();
 	}
@@ -318,20 +322,9 @@ if (isDocumentValid) {
 		toggleSidebar();
 	});
 
-	$doc.keydown(function (e) {
-		"use strict";
-		if (e.altKey && e.shiftKey) {
-			toggleSidebar();
-		}
-	});
-
 	$xpathInput.keydown(function (e) {
 		"use strict";
-		if ((e.ctrlKey || e.metaKey) && e.keyCode === 32) { // CTRL/CMD + SPACE
-			inputAutocomplete();
-			find();
-			return false;
-		} else if ((e.ctrlKey || e.metaKey) && (e.keyCode === 86 || e.keyCode === 88 || e.keyCode === 89 || e.keyCode === 90)) { // CTRL/CMD + V/X/Y/Z
+		if ((e.ctrlKey || e.metaKey) && (e.keyCode === 86 || e.keyCode === 88 || e.keyCode === 89 || e.keyCode === 90)) { // CTRL/CMD + V/X/Y/Z
 			find();
 		} else {
 			if ($xpathInput.val() !== 0) {

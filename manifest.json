@@ -23,10 +23,29 @@
 		"_execute_browser_action": {
 			"suggested_key": {
 				"windows": "Alt+X",
-              	"mac": "Alt+X",
-              	"linux": "Alt+X",
+			  	"mac": "Alt+X",
+			  	"linux": "Alt+X",
 				"default": "Alt+X"
-			}
+			},
+			"description": "Toogle XPather"
+		},
+		"toggle-sidebar": {
+			"suggested_key": {
+				"windows": "Alt+Shift+X",
+				"mac": "Alt+Shift+X",
+				"linux": "Alt+Shift+X",
+				"default": "Alt+Shift+X"
+			},
+			"description": "Toogle XPather sidebar"
+		},
+		"input-autocomplete": {
+			"suggested_key": {
+				"windows": "Alt+Z",
+				"mac": "Alt+Z",
+				"linux": "Alt+Z",
+				"default": "Alt+Z"
+			},
+			"description": "Autocomplete XPather input"
 		}
 	},
 
