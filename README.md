@@ -20,7 +20,7 @@ Chrome extension for XPaths operations done the right way. Get it from [Chrome W
 
 All shortcuts are customizable using "Keyboard Shortcuts" option located on the bottom of Chrome extensions page (chrome://extensions).
 
-### Available shortcuts
+### Available autocomplete shortcuts
 
 Shortcut | XPath function
 --- | --- | ---
