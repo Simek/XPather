@@ -30,9 +30,26 @@ function init() {
 }
 
 function checkIsDocumentValid() {
-	if (document.contentType.indexOf('text/html') === -1) {
-		return false;
+	if ('contentType' in document) {
+		if (document.contentType.indexOf('text/html') === -1) {
+			return false;
+		}
+	} else {
+		var pathname = window.location.pathname.split('.');
+		var protocol = window.location.protocol;
+		var fileExtension = pathname[pathname.length - 1];
+
+		if (protocol === 'file:') {
+			if (fileExtension !== 'html') {
+				return false;
+			}
+		} else if (protocol === 'http:' || protocol === 'https:') {
+			return true;
+		} else {
+			return false;
+		}
 	}
+
 	return true;
 }
 
