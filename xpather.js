@@ -131,10 +131,11 @@ function createSidebarEntry(index, node, type) {
 		entry.addClass('xpather-sidebar-entry-attribute');
 	} else {
 		var nodeText = node.text().trim();
-		if (type === 'element' && hasCSSContent(node) && nodeText.length === 0) {
+		var children = node.find('*');
+		if (type === 'element' && hasCSSContent(node, children) && nodeText.length === 0) {
 			entry.text('FONT ICON').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
-		} else if (type === 'element' && node[0].nodeName === 'IMG' || (nodeHasOnlyImage(node) && nodeText.length === 0)) {
+		} else if (type === 'element' && node[0].nodeName === 'IMG' || (nodeHasOnlyImage(node, children) && nodeText.length === 0)) {
 			entry.text('IMAGE').wrapInner('<span/>');
 			entry.addClass('xpather-sidebar-entry-info');
 		} else if (nodeText.length !== 0) {
@@ -190,29 +191,33 @@ function unwrapMatchedText() {
 	});
 }
 
-function hasCSSContent(node) {
+function hasCSSContent(node, childrens) {
 	if (window.getComputedStyle(node[0], ':before').content != '') {
 		return true;
 	}
-	var hasCSSContent = false;
-	node.find('*').filter(function () {
-		if (window.getComputedStyle(this, ':before').content != '') {
-			hasCSSContent = true;
-		}
-	})
-	return hasCSSContent;
+	try {
+		childrens.filter(function () {
+			if (window.getComputedStyle(this, ':before').content != '') {
+				throw BreakException;
+			}
+		})
+	} catch(e) {
+		return true;
+	}
+	return false;
 }
 
-function nodeHasOnlyImage(node) {
-	var allChildren = node.find('*');
-	if (allChildren.length !== 0) {
-		var hasOnlyImage = true;
-		allChildren.each(function (index, element) {
-			if ($(element).prop('tagName') != 'IMG') {
-				hasOnlyImage = false;
-			}
-		});
-		return hasOnlyImage;
+function nodeHasOnlyImage(node, childrens) {
+	if (childrens.length !== 0) {
+		try {
+			allChildren.each(function (index, element) {
+				if ($(element).prop('tagName') != 'IMG') {
+					throw BreakException;
+				}
+			});
+		} catch(e) {
+			return true;
+		}
 	}
 	return false;
 }
