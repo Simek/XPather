@@ -9,7 +9,7 @@ chrome.commands.onCommand.addListener(function(command) {
 		chrome.tabs.executeScript({
 			code: 'toggleSidebar()'
 		});
-	} else if (command == 'expand-shortcut') {
+	} else if (command == 'input-autocomplete') {
 		chrome.tabs.executeScript({
 			code: 'inputAutocomplete()'
 		});
