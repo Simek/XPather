@@ -1,5 +1,6 @@
 {
 	"name": "XPather",
+	"short_name": "XPather",
 	"description": "XPaths done the right way.",
 	"author": "Bartek 'Simek' Kaszubowski",
 	"homepage_url": "https://github.com/Simek/XPather",
