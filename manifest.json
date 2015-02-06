@@ -21,6 +21,9 @@
 	"commands": {
 		"_execute_browser_action": {
 			"suggested_key": {
+				"windows": "Alt+X",
+              	"mac": "Alt+X",
+              	"linux": "Alt+X",
 				"default": "Alt+X"
 			}
 		}
