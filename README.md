@@ -1,6 +1,8 @@
 # XPather
 
-Chrome extension for XPath operations on current document, reliable and easy to use with fully featured XPath 2.0 support. Get it from [Chrome Web Store](https://chrome.google.com/webstore/detail/xpather/gabekepgockchhemajjahpchlnkadiac).
+Chrome extension for XPath operations on current document, reliable and easy to use with fully featured XPath 2.0 support.
+
+[![Get it from Chrome Web Store][logo]](https://chrome.google.com/webstore/detail/xpather/gabekepgockchhemajjahpchlnkadiac)
 
 ### Features
 
@@ -43,3 +45,5 @@ Shortcut | HTML attribute
 `@i` | id
 `@s` | style
 `@t` | title
+
+[logo]: https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png "Get it from Chrome Web Store!"
