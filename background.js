@@ -18,7 +18,7 @@ chrome.commands.onCommand.addListener(function(command) {
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	chrome.tabs.executeScript(null, {
-		code: 'currentSelection = "' + info.selectionText + '"; findXPath()'
+		code: 'currentSelection = \'' + info.selectionText + '\'; findXPath()'
 	});
 });
 
