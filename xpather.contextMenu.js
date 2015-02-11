@@ -23,7 +23,10 @@ function getBestNode($matchedNodes) {
 	var nodesWithDepth = [];
 
 	$matchedNodes.each(function (index, element) {
-		nodesWithDepth.push({node: $(element), depth: $(element).parents().length});
+		nodesWithDepth.push({
+			node: $(element), 
+			depth: $(element).parents().length
+		});
 	});
 
 	nodesWithDepth = nodesWithDepth.sort(function (a, b) {
@@ -69,6 +72,10 @@ function findXPath() {
 	});
 
 	if ($matchedNodes.length === 0) {
+		$xpathInput.val('');
+		$resultBox.addClass('xpather-no-results').text('No unique XPath found!');
+		$sidebarEntries.empty();
+		clearHighlight();
 		return;
 	}
 
@@ -115,10 +122,8 @@ function findXPath() {
 				} else {
 					if (isSingleElement(parentTagName + '[' + attribute + '=\'' + $parent.attr(attribute) + '\'] > ' + tagName)) {
 						result = createSingleEntryXPathWithAttr($parent, attribute) + '/' + tagName;
-					}
-					if (result) {
 						return;
-					} 
+					}
 				}
 			}
 		});
@@ -140,5 +145,5 @@ function findXPath() {
 }
 
 var currentSelection = null;
-var attributes = ['id', 'class', 'title', 'itemprop', 'role', 'time', 'style'];
+var attributes = ['id', 'class', 'title', 'itemprop', 'role', 'time', 'rel', 'style'];
 var filteredTagNames = ['html', 'body', 'script'];
