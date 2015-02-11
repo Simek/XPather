@@ -1,5 +1,5 @@
 chrome.browserAction.onClicked.addListener(function(tab) {
-	chrome.tabs.executeScript({
+	chrome.tabs.executeScript(null, {
 		code: 'init()'
 	});
 });
@@ -14,4 +14,16 @@ chrome.commands.onCommand.addListener(function(command) {
 			code: 'inputAutocomplete()'
 		});
 	}
+});
+
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+	chrome.tabs.executeScript(null, {
+		code: 'currentSelection = "' + info.selectionText + '"; findXPath()'
+	});
+});
+
+chrome.contextMenus.create({
+	id: 'getXPath',
+	title: 'Get unique XPath',
+	contexts: ['selection']
 });

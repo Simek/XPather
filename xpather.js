@@ -3,28 +3,9 @@ function init() {
 	if (isDocumentValid) {
 		$html.toggleClass('xpather-on');
 		if (!$xpather.is(':visible')) {
-			$xpather.show();
-			correctFixedNodes();
-			setTimeout(function () {
-				$xpathInput.focus();
-			}, 1);
-			chrome.storage.sync.get('sidebarVisible', function (data) {
-				if (data.sidebarVisible) {
-					toggleSidebar();
-				}
-			});
-			if ($xpathInput.val() !== 0) {
-				find();
-			}
+			showXPather();
 		} else {
-			chrome.storage.sync.set({
-				'sidebarVisible': $sidebar.is(":visible")
-			});
-			$sidebar.hide();
-			$xpather.hide();
-			$sidebarToggler.removeClass('xpather-sidebar-toggler-active');
-			clearHighlight();
-			correctFixedNodes();
+			hideXPather();
 		}
 	}
 }
@@ -53,9 +34,35 @@ function checkIsDocumentValid() {
 	return true;
 }
 
-function find() {
+function showXPather() {
+	$xpather.show();
+	correctFixedNodes();
+	setTimeout(function () {
+		$xpathInput.focus();
+	}, 1);
+	chrome.storage.sync.get('sidebarVisible', function (data) {
+		if (data.sidebarVisible) {
+			toggleSidebar();
+		}
+	});
+	find(false);
+}
+
+function hideXPather() {
+	chrome.storage.sync.set({
+		'sidebarVisible': $sidebar.is(":visible")
+	});
+	$sidebar.hide();
+	$xpather.hide();
+	$sidebarToggler.removeClass('xpather-sidebar-toggler-active');
+	clearHighlight();
+	correctFixedNodes();
+}
+
+function find(force) {
 	var xpath = $xpathInput.val();
-	if (previousXPath === xpath) {
+
+	if (previousXPath === xpath && force !== true) {
 		return;
 	}
 
@@ -71,7 +78,6 @@ function find() {
 	}
 
 	previousXPath = xpath;
-	previousMatched = result;
 
 	if (result.length !== 0) {
 		if (result[0] instanceof Object) {
@@ -120,7 +126,7 @@ function findWithDelay() {
 	clearTimeout($xpathInput.data('timer'));
 	$xpathInput.data('timer', setTimeout(function () {
 		$xpathInput.removeData('timer');
-		find();
+		find(false);
 	}, 400));
 }
 
@@ -175,7 +181,7 @@ function toggleSidebar() {
 function clearHighlight() {
 	clearImportantHighlight();
 	unwrapMatchedText();
-	$.each(previousMatched, function (index, element) {
+	$.each($('.xpather-highlight'), function (index, element) {
 		$(element).safeRemoveClass('xpather-highlight');
 	});
 	$('*[class=""]').removeAttr('class');
@@ -261,7 +267,7 @@ function inputAutocomplete() {
 		$xpathInput.caret($xpathInput.val().length - newCaretPosition - caretPositionOffset);
 	}
 
-	find();
+	find(false);
 
 	function isXPathModified() {
 		return xpath != $xpathInput.val();
@@ -300,7 +306,6 @@ function correctFixedNodes() {
 var isDocumentValid = checkIsDocumentValid();
 
 if (isDocumentValid) {
-	var previousMatched = [];
 	var previousXPath = "";
 
 	var $doc = $(document);
@@ -318,7 +323,7 @@ if (isDocumentValid) {
 
 	$xpathForm.on('submit', function () {
 		"use strict";
-		find();
+		find(false);
 		return false;
 	});
 
@@ -330,12 +335,12 @@ if (isDocumentValid) {
 	$xpathInput.keydown(function (e) {
 		"use strict";
 		if ((e.ctrlKey || e.metaKey) && (e.keyCode === 86 || e.keyCode === 88 || e.keyCode === 89 || e.keyCode === 90)) { // CTRL/CMD + V/X/Y/Z
-			find();
+			find(false);
 		} else {
 			if ($xpathInput.val() !== 0) {
 				if (e.keyCode === 13) { // ENTER
 					clearTimeout($xpathInput.data('timer'));
-					find();
+					find(false);
 				} else {
 					findWithDelay();
 				}

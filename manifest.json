@@ -1,7 +1,7 @@
 {
 	"name": "XPather",
 	"short_name": "XPather",
-	"description": "XPather - Chrome extension for XPath operations on current document, reliable and easy to use with fully featured XPath 2.0 support.",
+	"description": "Chrome extension for XPath operations on current document, reliable and easy to use with fully featured XPath 2.0 support.",
 	"author": "Bartek 'Simek' Kaszubowski",
 	"homepage_url": "https://github.com/Simek/XPather",
 	"version": "0.7.3",
@@ -59,16 +59,15 @@
 				"lib/jquery.caret.js",
 				"lib/functions.js",
 				"xpather.constants.js",
+				"xpather.contextMenu.js",
 				"xpather.js"
 			],
 			"matches": ["<all_urls>"]
 		}
 	],
 
-	"devtools_page": "xpather.devtools.html",
-
 	"permissions": [
-		"activeTab", "storage", "<all_urls>"
+		"activeTab", "contextMenus", "storage", "<all_urls>"
 	],
 
 	"icons": {
