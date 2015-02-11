@@ -73,7 +73,7 @@ function findXPath() {
 
 	if ($matchedNodes.length === 0) {
 		$xpathInput.val('');
-		$resultBox.addClass('xpather-no-results').text('No unique XPath found!');
+		$resultBox.addClass('xpather-no-results').text('Unique XPath could not be found!');
 		$sidebarEntries.empty();
 		clearHighlight();
 		return;
@@ -133,7 +133,7 @@ function findXPath() {
 	find(true);
 
 	if (!result) {
-		$resultBox.addClass('xpather-no-results').text('No unique XPath found!');
+		$resultBox.addClass('xpather-no-results').text('Unique XPath could not be found!');
 	}
 
 	if (!$xpather.is(':visible')) {
