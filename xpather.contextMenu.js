@@ -62,7 +62,7 @@ function findXPath() {
 		return;
 	}
 
-	currentSelection = currentSelection.trim();
+	currentSelection = currentSelection.trim().replace(/\[XPATHER\]/g, '\'');
 
 	var $matchedNodes = $('*').filter(function () {
 		return filteredTagNames.indexOf(getNodeTagName($(this))) === -1 && $(this).text().indexOf(currentSelection) !== -1;
@@ -71,7 +71,7 @@ function findXPath() {
 	if ($matchedNodes.length === 0) {
 		return;
 	}
-	
+
 	var $node = getBestNode($matchedNodes);
 	var tagName = getNodeTagName($node);
 	var nodeIndex = getNodeXPathIndex($node, tagName);
