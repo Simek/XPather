@@ -1,8 +1,6 @@
 function findSingleEntryXPath($node, attribute, tagName) {
 	var selector = $node.attr(attribute);
 
-	console.log(tagName + '[' + attribute + '="' + selector + '"]');
-
 	if (isSingleElement(tagName + '[' + attribute + '="' + selector + '"]')) {
 		return createSingleEntryXPathWithAttr($node, attribute);
 	}
@@ -10,8 +8,29 @@ function findSingleEntryXPath($node, attribute, tagName) {
 	return null;
 }
 
-function getTagName($node) {
+function getNodeTagName($node) {
 	return $node.prop('tagName').toLowerCase();
+}
+
+function getNodeXPathIndex($node, tagName) {
+	var notSameTagAntecedentsCount = $node.prevAll().filter(function () {
+		return getNodeTagName($(this)) !== tagName;
+	}).length;
+	return $node.index() + 1 - notSameTagAntecedentsCount;
+}
+
+function getBestNode($matchedNodes) {
+	var nodesWithDepth = [];
+
+	$matchedNodes.each(function (index, element) {
+		nodesWithDepth.push({node: $(element), depth: $(element).parents().length});
+	});
+
+	nodesWithDepth = nodesWithDepth.sort(function (a, b) {
+	    return a.depth - b.depth;
+	});
+
+	return nodesWithDepth.pop().node;
 }
 
 function isSingleElement(selector) {
@@ -23,11 +42,11 @@ function isSingleElementInParent(selector, $parent) {
 }
 
 function createSingleEntryXPath($node) {
-	return '\/\/' + getTagName($node);
+	return '\/\/' + getNodeTagName($node);
 }
 
 function createSingleEntryXPathWithAttr($node, attribute) {
-	return '\/\/' + getTagName($node) + '[@' + attribute + '=\'' + $node.attr(attribute) + '\']';
+	return '\/\/' + getNodeTagName($node) + '[@' + attribute + '=\'' + $node.attr(attribute) + '\']';
 }
 
 function createSingleEntryXPathWithIndex($node, index) {
@@ -35,7 +54,7 @@ function createSingleEntryXPathWithIndex($node, index) {
 }
 
 function createEntryXPathWithIndex($node, index) {
-	return '\/' + getTagName($node) + '[' + index + ']';
+	return '\/' + getNodeTagName($node) + '[' + index + ']';
 }
 
 function findXPath() {
@@ -46,16 +65,16 @@ function findXPath() {
 	currentSelection = currentSelection.trim();
 
 	var $matchedNodes = $('*').filter(function () {
-		return filteredTagNames.indexOf($(this).prop("tagName").toLowerCase()) === -1 && $(this).text().indexOf(currentSelection) !== -1;
+		return filteredTagNames.indexOf(getNodeTagName($(this))) === -1 && $(this).text().indexOf(currentSelection) !== -1;
 	});
 
 	if ($matchedNodes.length === 0) {
 		return;
 	}
-
-	var $node = $matchedNodes.last();
-	var tagName = getTagName($node);
-	var nodeIndex = $node.index() + 1;
+	
+	var $node = getBestNode($matchedNodes);
+	var tagName = getNodeTagName($node);
+	var nodeIndex = getNodeXPathIndex($node, tagName);
 
 	var result = null;
 
@@ -80,7 +99,7 @@ function findXPath() {
 
 	if (!result) {
 		var $parent = $node.parentNode ? $node.parentNode : $node.parent();
-		var parentTagName = getTagName($parent);
+		var parentTagName = getNodeTagName($parent);
 
 		attributes.forEach(function (attribute) {
 			if ($parent.attr(attribute)) {
