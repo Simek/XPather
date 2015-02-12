@@ -43,6 +43,7 @@
 }
 
 #xpather-xpath::-webkit-input-placeholder {
+	line-height: 42px;
 	color: #666;
 }
 

@@ -145,5 +145,5 @@ function findXPath() {
 }
 
 var currentSelection = null;
-var attributes = ['id', 'class', 'title', 'itemprop', 'role', 'time', 'rel', 'style'];
+var attributes = ['id', 'class', 'itemprop', 'role', 'time', 'rel', 'style'];
 var filteredTagNames = ['html', 'body', 'script'];
