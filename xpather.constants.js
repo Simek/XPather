@@ -32,3 +32,6 @@ var tagsWithShortcuts = {
 	'd': ['div'],
 	's': ['span']
 }
+
+var attributes = ['id', 'class', 'itemprop', 'role', 'time', 'rel', 'style'];
+var filteredTagNames = ['html', 'body', 'script'];

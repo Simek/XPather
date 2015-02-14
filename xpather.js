@@ -70,6 +70,7 @@ function find(force) {
 	clearHighlight();
 
 	var result;
+
 	try {
 		result = $doc.xpath(xpath);
 	} catch(e) {
@@ -81,6 +82,7 @@ function find(force) {
 
 	if (result.length !== 0) {
 		if (result[0] instanceof Object) {
+			var entries = [];
 			$.each(result, function (index, element) {
 				var node = $(element);
 				var nodeType = getNodeType(node);
@@ -91,8 +93,9 @@ function find(force) {
 					node.safeAddClass('xpather-highlight');
 				}
 
-				$sidebarEntries.append(createSidebarEntry(index, node, nodeType));
+				entries.push(createSidebarEntry(index, node, nodeType));
 			});
+			$sidebarEntries.append(entries);
 			$resultBox.removeClass('xpather-no-results').text(result.length);
 		} else {
 			$resultBox.removeClass('xpather-no-results').text(result[0]);
@@ -131,41 +134,53 @@ function findWithDelay() {
 }
 
 function createSidebarEntry(index, node, type) {
-	var entry = $('<div class="xpather-sidebar-entry" />');
-	if (type === 'attribute') {
-		entry.text(node[0].value).wrapInner('<span/>');
-		entry.addClass('xpather-sidebar-entry-attribute');
+	var text = '', className = '';
+	var isAttribute = type === 'attribute';
+
+	if (isAttribute) {
+		text = node[0].value;
+		className = 'xpather-sidebar-entry-attribute';
 	} else {
 		var nodeText = node.text().trim();
+		var hasText = nodeText.length !== 0;
 		var children = node.find('*');
-		if (type === 'element' && hasCSSContent(node, children) && nodeText.length === 0) {
-			entry.text('FONT ICON').wrapInner('<span/>');
-			entry.addClass('xpather-sidebar-entry-info');
-		} else if (type === 'element' && node[0].nodeName === 'IMG' || (nodeHasOnlyImage(node, children) && nodeText.length === 0)) {
-			entry.text('IMAGE').wrapInner('<span/>');
-			entry.addClass('xpather-sidebar-entry-info');
-		} else if (nodeText.length !== 0) {
-			entry.text(getNodeText(node)).wrapInner('<span/>');
-			if (nodeText.length > 220) {
-				entry.append('<div class="xpather-sidebar-entry-fade" />');
-			}
-		} else if (!/\S/.test(nodeText)) {
-			entry.text('WHITESPACES').wrapInner('<span/>');
-			entry.addClass('xpather-sidebar-entry-info');
-		} else {
-			entry.text('EMPTY NODE').wrapInner('<span/>');
-			entry.addClass('xpather-sidebar-entry-info');
-		}
 
-		entry.bind('click', function () {
+		if (!hasText) {
+			className = 'xpather-sidebar-entry-info';
+		}
+		
+		if (type === 'element' && hasCSSContent(node, children) && !hasText) {
+			text = 'FONT ICON';
+		} else if ((type === 'element' && node[0].nodeName === 'IMG') || (nodeHasOnlyImage(node, children) && !hasText)) {
+			text = 'IMAGE';
+		} else if (hasText) {
+			text = getNodeText(node);
+		} else if (!/\S/.test(nodeText)) {
+			text = 'WHITESPACES';
+		} else {
+			text = 'EMPTY NODE';
+		}
+	}
+
+	var entryContent = '<div class="{className}"><span/>{fade}<div class="xpather-sidebar-entry-count">{i}</div></div>'.supplant({
+		className: 'xpather-sidebar-entry ' + className,
+		text: text,
+		fade: (hasText && nodeText.length > 220) ? '<div class="xpather-sidebar-entry-fade" />' : '',
+		i: index + 1
+	})
+
+	var $entry = $(entryContent);
+	$entry.text(text);
+
+	if (!isAttribute) {
+		$entry.bind('click', function () {
 			$.scrollTo(node, 500, {offset: -80});
 			clearImportantHighlight();
 			node.safeAddClass('xpath-important-highlight');
 		});
 	}
-	entry.append('<div class="xpather-sidebar-entry-count">' + (index + 1) + '</div>');
 
-	return entry;
+	return $entry;
 }
 
 function toggleSidebar() {

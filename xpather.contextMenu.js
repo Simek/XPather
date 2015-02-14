@@ -19,7 +19,19 @@ function getNodeXPathIndex($node, tagName) {
 	return $node.index() + 1 - notSameTagAntecedentsCount;
 }
 
-function getBestNode($matchedNodes) {
+function getBestNode(currentSelection) {
+	var $matchedNodes = $('body').find('*').filter(function () {
+		return filteredTagNames.indexOf(getNodeTagName($(this))) === -1 && $(this).text().indexOf(currentSelection) !== -1;
+	});
+
+	if ($matchedNodes.length === 0) {
+		$xpathInput.val('');
+		$resultBox.addClass('xpather-no-results').text('Unique XPath could not be found!');
+		$sidebarEntries.empty();
+		clearHighlight();
+		return null;
+	}
+
 	var nodesWithDepth = [];
 
 	$matchedNodes.each(function (index, element) {
@@ -40,24 +52,38 @@ function isSingleElement(selector) {
 	return $(selector).length === 1;
 }
 
-function isSingleElementInParent(selector, $parent) {
-	return $(parent).find(selector).length === 1;
+function isSingleChildInParent(tagName, $parent) {
+	return isSingleElement($parent.find(">" + tagName));
 }
 
-function createSingleEntryXPath($node) {
-	return '\/\/' + getNodeTagName($node);
+function isSingleChildInParentWithAttr(tagName, $parent, attribute) {
+	var childInParentWithAttrQuery = "{pTagName}[{attr}='{value}']>{tagName}".supplant({
+		pTagName: getNodeTagName($parent),
+		attr: attribute,
+		value: $parent.attr(attribute),
+		tagName: tagName
+	});
+	return isSingleElement($(childInParentWithAttrQuery));
+}
+
+function createSingleEntryXPath(tagName) {
+	return '\/\/' + tagName;
 }
 
 function createSingleEntryXPathWithAttr($node, attribute) {
-	return '\/\/' + getNodeTagName($node) + '[@' + attribute + '=\'' + $node.attr(attribute) + '\']';
+	return "\/\/{tagName}[@{attr}='{value}']".supplant({
+		tagName: getNodeTagName($node),
+		attr: attribute,
+		value: $node.attr(attribute)
+	});
 }
 
-function createSingleEntryXPathWithIndex($node, index) {
-	return '\/' + createEntryXPathWithIndex($node, index);
+function createSingleEntryXPathWithIndex(tagName, index) {
+	return '\/' + createEntryXPathWithIndex(tagName, index);
 }
 
-function createEntryXPathWithIndex($node, index) {
-	return '\/' + getNodeTagName($node) + '[' + index + ']';
+function createEntryXPathWithIndex(tagName, index) {
+	return '\/' + tagName + '[' + index + ']';
 }
 
 function findXPath() {
@@ -65,68 +91,79 @@ function findXPath() {
 		return;
 	}
 
-	currentSelection = currentSelection.trim().replace(/\[XPATHER\]/g, '\'');
+	currentSelection = currentSelection.replace(/\[XPATHER\]/g, '\'');
 
-	var $matchedNodes = $('*').filter(function () {
-		return filteredTagNames.indexOf(getNodeTagName($(this))) === -1 && $(this).text().indexOf(currentSelection) !== -1;
-	});
+	var $node = null;
+	var result = null;
 
-	if ($matchedNodes.length === 0) {
-		$xpathInput.val('');
-		$resultBox.addClass('xpather-no-results').text('Unique XPath could not be found!');
-		$sidebarEntries.empty();
-		clearHighlight();
-		return;
+	if (clickedNode) {
+		var clickedNodeText = $(clickedNode).text().split('\n').join(' ');
+		if (clickedNodeText.indexOf(currentSelection) === -1) {
+			$node = $(clickedNode).parent();
+		} else {
+			$node = $(clickedNode);
+		}
+	} else {
+		$node(getBestNode(currentSelection));
 	}
 
-	var $node = getBestNode($matchedNodes);
+	clickedNode = null;
+
 	var tagName = getNodeTagName($node);
 	var nodeIndex = getNodeXPathIndex($node, tagName);
 
-	var result = null;
-
 	if (isSingleElement(tagName)) {
-		result = createSingleEntryXPath($node);
+		result = createSingleEntryXPath(tagName);
 	}
 
 	if (!result) {
-		attributes.forEach(function (attribute) {
-			if ($node.attr(attribute)) {
-				result = findSingleEntryXPath($node, attribute, tagName);
-				if (result) {
-					return;
+		try {
+			attributes.forEach(function (attribute) {;
+				if ($node.attr(attribute)) {
+					result = findSingleEntryXPath($node, attribute, tagName);
+					if (result) {
+						throw BreakException;
+					}
 				}
-			}
-		});
+			});
+		} catch (e) {}
 	}
 
 	if (!result && isSingleElement(tagName + '[' + nodeIndex + ']')) {
-		result = createSingleEntryXPathWithIndex($node, nodeIndex);
+		result = createSingleEntryXPathWithIndex(tagName, nodeIndex);
 	}
 
 	if (!result) {
 		var $parent = $node.parentNode ? $node.parentNode : $node.parent();
 		var parentTagName = getNodeTagName($parent);
-
-		attributes.forEach(function (attribute) {
-			if ($parent.attr(attribute)) {
-				result = findSingleEntryXPath($parent, attribute, parentTagName);
-
-				if (result) {
-					if (isSingleElementInParent(tagName, $parent)) {
-						result += '/' + tagName;
-					} else {
-						result += createEntryXPathWithIndex($node, nodeIndex);
-					}
-					return;
-				} else {
-					if (isSingleElement(parentTagName + '[' + attribute + '=\'' + $parent.attr(attribute) + '\'] > ' + tagName)) {
-						result = createSingleEntryXPathWithAttr($parent, attribute) + '/' + tagName;
-						return;
+		
+		try {
+			attributes.forEach(function (attribute) {
+				if ($parent.attr(attribute)) {
+					result = findSingleEntryXPath($parent, attribute, parentTagName);
+					if (result) {
+						throw BreakException;
 					}
 				}
+			});
+		} catch (e) {}
+
+		if (result) {
+			if (isSingleChildInParent(tagName, $parent)) {
+				result += '/' + tagName;
+			} else {
+				result += createEntryXPathWithIndex(tagName, nodeIndex);
 			}
-		});
+		} else {
+			try {
+				attributes.forEach(function (attribute) {
+					if (isSingleChildInParentWithAttr(tagName, $parent, attribute)) {
+						result = createSingleEntryXPathWithAttr($parent, attribute) + '/' + tagName;
+						throw BreakException;
+					}
+				});
+			} catch (e) {}
+		}
 	}
 
 	$xpathInput.val(result);
@@ -145,5 +182,10 @@ function findXPath() {
 }
 
 var currentSelection = null;
-var attributes = ['id', 'class', 'itemprop', 'role', 'time', 'rel', 'style'];
-var filteredTagNames = ['html', 'body', 'script'];
+var clickedNode = null;
+
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 2) { 
+        clickedNode = e.target;
+    }
+}, true);
