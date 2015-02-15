@@ -5,11 +5,11 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 });
 
 chrome.commands.onCommand.addListener(function(command) {
-	if (command == 'toggle-sidebar') {
+	if (command === 'toggle-sidebar') {
 		chrome.tabs.executeScript({
 			code: 'toggleSidebar()'
 		});
-	} else if (command == 'input-autocomplete') {
+	} else if (command === 'input-autocomplete') {
 		chrome.tabs.executeScript({
 			code: 'inputAutocomplete()'
 		});

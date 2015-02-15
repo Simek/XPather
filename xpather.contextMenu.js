@@ -1,3 +1,5 @@
+var currentSelection = null;
+
 function findSingleEntryXPath($node, attribute, tagName) {
 	var selector = $node.attr(attribute);
 
@@ -86,6 +88,15 @@ function createEntryXPathWithIndex(tagName, index) {
 	return '\/' + tagName + '[' + index + ']';
 }
 
+function clearUserSelection() {
+	if (document.selection && document.selection.empty) {
+		document.selection.empty();
+	} else if (window.getSelection) {
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+	}
+}
+
 function findXPath() {
 	if (!isDocumentValid) {
 		return;
@@ -118,7 +129,7 @@ function findXPath() {
 
 	if (!result) {
 		try {
-			attributes.forEach(function (attribute) {;
+			attributes.forEach(function (attribute) {
 				if ($node.attr(attribute)) {
 					result = findSingleEntryXPath($node, attribute, tagName);
 					if (result) {
@@ -169,6 +180,8 @@ function findXPath() {
 	$xpathInput.val(result);
 	find(true);
 
+	clearUserSelection();
+
 	if (!result) {
 		$resultBox.addClass('xpather-no-results').text('Unique XPath could not be found!');
 	}
@@ -180,12 +193,3 @@ function findXPath() {
 
 	return;
 }
-
-var currentSelection = null;
-var clickedNode = null;
-
-document.addEventListener('mousedown', function(e) {
-    if (e.button === 2) { 
-        clickedNode = e.target;
-    }
-}, true);

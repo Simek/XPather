@@ -1,5 +1,6 @@
+var clickedNode = null;
+
 function init() {
-	"use strict";
 	if (isDocumentValid) {
 		$html.toggleClass('xpather-on');
 		if (!$xpather.is(':visible')) {
@@ -88,7 +89,7 @@ function find(force) {
 				var nodeType = getNodeType(node);
 
 				if (nodeType === 'text') {
-					node.wrap('<xpather class="xpather-text-hightlight"/>')
+					node.wrap('<xpather class="xpather-text-hightlight"/>');
 				} else if (nodeType === 'element') {
 					node.safeAddClass('xpather-highlight');
 				}
@@ -136,14 +137,15 @@ function findWithDelay() {
 function createSidebarEntry(index, node, type) {
 	var text = '', className = '';
 	var isAttribute = type === 'attribute';
+	var addFader = false;
 
 	if (isAttribute) {
 		text = node[0].value;
 		className = 'xpather-sidebar-entry-attribute';
 	} else {
+		var children = node.find('*');
 		var nodeText = node.text().trim();
 		var hasText = nodeText.length !== 0;
-		var children = node.find('*');
 
 		if (!hasText) {
 			className = 'xpather-sidebar-entry-info';
@@ -155,6 +157,7 @@ function createSidebarEntry(index, node, type) {
 			text = 'IMAGE';
 		} else if (hasText) {
 			text = getNodeText(node);
+			addFader = hasText && nodeText.length > 220;
 		} else if (!/\S/.test(nodeText)) {
 			text = 'WHITESPACES';
 		} else {
@@ -165,9 +168,9 @@ function createSidebarEntry(index, node, type) {
 	var entryContent = '<div class="{className}"><span/>{fade}<div class="xpather-sidebar-entry-count">{i}</div></div>'.supplant({
 		className: 'xpather-sidebar-entry ' + className,
 		text: text,
-		fade: (hasText && nodeText.length > 220) ? '<div class="xpather-sidebar-entry-fade" />' : '',
+		fade: addFader ? '<div class="xpather-sidebar-entry-fade" />' : '',
 		i: index + 1
-	})
+	});
 
 	var $entry = $(entryContent);
 	$entry.text(text);
@@ -212,17 +215,17 @@ function unwrapMatchedText() {
 	});
 }
 
-function hasCSSContent(node, childrens) {
+function hasCSSContent(node, children) {
 	if (window.getComputedStyle(node[0], ':before').content != '') {
 		return true;
 	}
 	try {
-		childrens.filter(function () {
+		children.filter(function () {
 			if (window.getComputedStyle(this, ':before').content != '') {
 				throw BreakException;
 			}
-		})
-	} catch(e) {
+		});
+	} catch (e) {
 		return true;
 	}
 	return false;
@@ -236,7 +239,7 @@ function nodeHasOnlyImage(node, childrens) {
 					throw BreakException;
 				}
 			});
-		} catch(e) {
+		} catch (e) {
 			return true;
 		}
 	}
@@ -285,12 +288,12 @@ function inputAutocomplete() {
 	find(false);
 
 	function isXPathModified() {
-		return xpath != $xpathInput.val();
+		return xpath !== $xpathInput.val();
 	}
 
 	function tryExtend(shotrcuts, pattern, offset) {
 		$.each(shotrcuts, function (shortcut, selectorName) {
-			if (keyword == shortcut) {
+			if (keyword === shortcut) {
 				extendShortcut(pattern, selectorName, shortcut.length);
 				caretPositionOffset = offset;
 			}
@@ -321,7 +324,7 @@ function correctFixedNodes() {
 var isDocumentValid = checkIsDocumentValid();
 
 if (isDocumentValid) {
-	var previousXPath = "";
+	var previousXPath = '';
 
 	var $doc = $(document);
 	var $body = $('body');
@@ -336,19 +339,26 @@ if (isDocumentValid) {
 	var $sidebarEntries = $('#xpather-sidebar-entries');
 	var $sidebarToggler = $('#xpather-sidebar-toggler');
 
-	$xpathForm.on('submit', function () {
-		"use strict";
+	$doc.mousedown(function (e) {
+		'use strict';
+		if (e.button === 2) { 
+			clickedNode = e.target;
+		}
+	});
+
+	$xpathForm.submit(function () {
+		'use strict';
 		find(false);
 		return false;
 	});
 
 	$sidebarToggler.click(function () {
-		"use strict";
+		'use strict';
 		toggleSidebar();
 	});
 
 	$xpathInput.keydown(function (e) {
-		"use strict";
+		'use strict';
 		if ((e.ctrlKey || e.metaKey) && (e.keyCode === 86 || e.keyCode === 88 || e.keyCode === 89 || e.keyCode === 90)) { // CTRL/CMD + V/X/Y/Z
 			find(false);
 		} else {
