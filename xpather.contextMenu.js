@@ -4,7 +4,7 @@ function findSingleEntryXPath($node, attribute, tagName) {
 	var selector = $node.attr(attribute);
 
 	if (isSingleElement(tagName + '[' + attribute + '="' + selector + '"]')) {
-		return createSingleEntryXPathWithAttr($node, attribute);
+		return createXPathWithAttr($node, attribute);
 	}
 
 	return null;
@@ -50,6 +50,32 @@ function getBestNode(currentSelection) {
 	return nodesWithDepth.pop().node;
 }
 
+function tryPatentAndChildWithAttrs($node, $parent) {
+	var result = null;
+	var tagName = getNodeTagName($node);
+	try {
+		for (var i = 0; i < attributesLength; i++) {
+			if (isSingleChildInParentWithAttr(tagName, $parent, attributes[i])) {
+				result = createXPathWithAttr($parent, attributes[i]) + '/' + tagName;
+				throw BreakException;
+			}
+		}
+	} catch (e) {
+		return result;
+	}
+	try {
+		for (var i = 0; i < attributesLength; i++) {
+			for (var j = 0; j < attributesLength; j++) {
+				if (isSingleChildWithAttrInParentWithAttr($node, $parent, attributes[j], attributes[i])) {
+					result = createXPathWithAttr($parent, attributes[i]) + createXPathWithAttr($node, attributes[j], true);
+					throw BreakException;
+				}
+			}
+		}
+	} catch (e) {}
+	return result;
+}
+
 function isSingleElement(selector) {
 	return $(selector).length === 1;
 }
@@ -59,33 +85,53 @@ function isSingleChildInParent(tagName, $parent) {
 }
 
 function isSingleChildInParentWithAttr(tagName, $parent, attribute) {
-	var childInParentWithAttrQuery = "{pTagName}[{attr}='{value}']>{tagName}".supplant({
-		pTagName: getNodeTagName($parent),
-		attr: attribute,
-		value: $parent.attr(attribute),
-		tagName: tagName
-	});
-	return isSingleElement($(childInParentWithAttrQuery));
+	if ($parent.attr(attribute)) {
+		var childInParentWithAttrQuery = "{pTagName}[{attr}='{value}']>{tagName}".supplant({
+			pTagName: getNodeTagName($parent),
+			attr: attribute,
+			value: $parent.attr(attribute),
+			tagName: tagName
+		});
+		return isSingleElement($(childInParentWithAttrQuery));
+	}
+	return false;
 }
 
-function createSingleEntryXPath(tagName) {
+function isSingleChildWithAttrInParentWithAttr($node, $parent, nodeAttribute, parentAttribute) {
+	if ($parent.attr(parentAttribute) && $node.attr(nodeAttribute)) {
+		var childInParentWithAttrQuery = "{pTagName}[{pAttr}='{pValue}']>{cTagName}[{cAttr}='{cValue}']".supplant({
+			pTagName: getNodeTagName($parent),
+			pAttr: parentAttribute,
+			pValue: $parent.attr(parentAttribute),
+			cTagName: getNodeTagName($node),
+			cAttr: nodeAttribute,
+			cValue: $node.attr(nodeAttribute),
+		});
+		return isSingleElement($(childInParentWithAttrQuery));
+	}
+	return false;
+}
+
+function createXPath(tagName) {
 	return '\/\/' + tagName;
 }
 
-function createSingleEntryXPathWithAttr($node, attribute) {
-	return "\/\/{tagName}[@{attr}='{value}']".supplant({
+function createXPathWithAttr($node, attribute, isChild) {
+	isChild = typeof isChild !== 'undefined' ?  isChild : false;
+	return "{slash}\/{tagName}[@{attr}='{value}']".supplant({
+		slash: isChild ? '' : '\/',
 		tagName: getNodeTagName($node),
 		attr: attribute,
 		value: $node.attr(attribute)
 	});
 }
-
-function createSingleEntryXPathWithIndex(tagName, index) {
-	return '\/' + createEntryXPathWithIndex(tagName, index);
-}
-
-function createEntryXPathWithIndex(tagName, index) {
-	return '\/' + tagName + '[' + index + ']';
+function createXPathWithIndex(tagName, index, isChild) {
+	isChild = typeof isChild !== 'undefined' ?  isChild : false;
+	return "{slash}\/{tagName}[{i}]".supplant({
+		slash: isChild ? '' : '\/',
+		tagName: tagName,
+		i: index
+	});
 }
 
 function clearUserSelection() {
@@ -124,24 +170,24 @@ function findXPath() {
 	var nodeIndex = getNodeXPathIndex($node, tagName);
 
 	if (isSingleElement(tagName)) {
-		result = createSingleEntryXPath(tagName);
+		result = createXPath(tagName);
 	}
 
 	if (!result) {
 		try {
-			attributes.forEach(function (attribute) {
-				if ($node.attr(attribute)) {
-					result = findSingleEntryXPath($node, attribute, tagName);
+			for (var i = 0; i < attributesLength; i++) {
+				if ($node.attr(attributes[i])) {
+					result = findSingleEntryXPath($node, attributes[i], tagName);
 					if (result) {
 						throw BreakException;
 					}
 				}
-			});
+			}
 		} catch (e) {}
 	}
 
 	if (!result && isSingleElement(tagName + '[' + nodeIndex + ']')) {
-		result = createSingleEntryXPathWithIndex(tagName, nodeIndex);
+		result = createXPathWithIndex(tagName, nodeIndex);
 	}
 
 	if (!result) {
@@ -149,32 +195,25 @@ function findXPath() {
 		var parentTagName = getNodeTagName($parent);
 		
 		try {
-			attributes.forEach(function (attribute) {
-				if ($parent.attr(attribute)) {
-					result = findSingleEntryXPath($parent, attribute, parentTagName);
+			for (var i = 0; i < attributesLength; i++) {
+				if ($parent.attr(attributes[i])) {
+					result = findSingleEntryXPath($parent, attributes[i], parentTagName);
 					if (result) {
 						throw BreakException;
 					}
 				}
-			});
-		} catch (e) {}
-
-		if (result) {
+			}
+		} catch (e) {
 			if (isSingleChildInParent(tagName, $parent)) {
 				result += '/' + tagName;
 			} else {
-				result += createEntryXPathWithIndex(tagName, nodeIndex);
+				result += createXPathWithIndex(tagName, nodeIndex, true);
 			}
-		} else {
-			try {
-				attributes.forEach(function (attribute) {
-					if (isSingleChildInParentWithAttr(tagName, $parent, attribute)) {
-						result = createSingleEntryXPathWithAttr($parent, attribute) + '/' + tagName;
-						throw BreakException;
-					}
-				});
-			} catch (e) {}
 		}
+	}
+
+	if (!result) {
+		result = tryPatentAndChildWithAttrs($node, $parent);
 	}
 
 	$xpathInput.val(result);

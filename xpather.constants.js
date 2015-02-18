@@ -34,4 +34,5 @@ var tagsWithShortcuts = {
 }
 
 var attributes = ['id', 'class', 'itemprop', 'role', 'time', 'rel', 'style'];
+var attributesLength = attributes.length;
 var filteredTagNames = ['html', 'body', 'script'];
