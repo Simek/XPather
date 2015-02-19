@@ -153,7 +153,7 @@ function createSidebarEntry(index, node, type) {
 		
 		if (type === 'element' && hasCSSContent(node, children) && !hasText) {
 			text = 'FONT ICON';
-		} else if ((type === 'element' && node[0].nodeName === 'IMG') || (nodeHasOnlyImage(node, children) && !hasText)) {
+		} else if ((type === 'element' && node[0].nodeName === 'IMG') || (nodeHasImage(node, children) && !hasText)) {
 			text = 'IMAGE';
 		} else if (hasText) {
 			text = getNodeText(node);
@@ -216,12 +216,12 @@ function unwrapMatchedText() {
 }
 
 function hasCSSContent(node, children) {
-	if (window.getComputedStyle(node[0], ':before').content != '') {
+	if (window.getComputedStyle(node[0], ':before').content !== '') {
 		return true;
 	}
 	try {
 		children.filter(function () {
-			if (window.getComputedStyle(this, ':before').content != '') {
+			if (window.getComputedStyle(this, ':before').content !== '') {
 				throw BreakException;
 			}
 		});
@@ -231,11 +231,11 @@ function hasCSSContent(node, children) {
 	return false;
 }
 
-function nodeHasOnlyImage(node, childrens) {
-	if (childrens.length !== 0) {
+function nodeHasImage(node, children) {
+	if (children.length !== 0) {
 		try {
-			allChildren.each(function (index, element) {
-				if ($(element).prop('tagName') != 'IMG') {
+			children.each(function (index, element) {
+				if ($(element).prop('tagName') !== 'IMG') {
 					throw BreakException;
 				}
 			});

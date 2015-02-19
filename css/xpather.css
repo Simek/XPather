@@ -23,6 +23,8 @@
 #xpather-xpath {
 	background: #000;
 	border: 0;
+	display: inline-block;
+	float: left;
 	font-size: 16px;
 	font-weight: 400;
 	font-style: normal;

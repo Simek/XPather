@@ -50,11 +50,11 @@ function getBestNode(currentSelection) {
 	return nodesWithDepth.pop().node;
 }
 
-function tryPatentAndChildWithAttrs($node, $parent) {
+function tryParentAndChildWithAttrs($node, $parent, areDistant) {
 	var result = null;
 	var tagName = getNodeTagName($node);
 	try {
-		for (var i = 0; i < attributesLength; i++) {
+		for (i = 0; i < attributesLength; i++) {
 			if (isSingleChildInParentWithAttr(tagName, $parent, attributes[i])) {
 				result = createXPathWithAttr($parent, attributes[i]) + '/' + tagName;
 				throw BreakException;
@@ -64,10 +64,10 @@ function tryPatentAndChildWithAttrs($node, $parent) {
 		return result;
 	}
 	try {
-		for (var i = 0; i < attributesLength; i++) {
-			for (var j = 0; j < attributesLength; j++) {
+		for (i = 0; i < attributesLength; i++) {
+			for (j = 0; j < attributesLength; j++) {
 				if (isSingleChildWithAttrInParentWithAttr($node, $parent, attributes[j], attributes[i])) {
-					result = createXPathWithAttr($parent, attributes[i]) + createXPathWithAttr($node, attributes[j], true);
+					result = createXPathWithAttr($parent, attributes[i]) + (areDistant ? '\/' : '') +createXPathWithAttr($node, attributes[j], true);
 					throw BreakException;
 				}
 			}
@@ -143,6 +143,53 @@ function clearUserSelection() {
 	}
 }
 
+function getParent($node) {
+	return $node.parent();
+}
+
+function tryWithParent($node, $parent, iteration) {
+	iteration = typeof iteration !== 'undefined' ?  iteration : 1;
+
+	var result = null;
+
+	if (iteration < 4) {
+		if (typeof $parent === 'undefined') {
+			$parent = getParent($node);
+		}
+
+		var parentTagName = getNodeTagName($parent);
+		
+		try {
+			for (i = 0; i < attributesLength; i++) {
+				if ($parent.attr(attributes[i])) {
+					result = findSingleEntryXPath($parent, attributes[i], parentTagName);
+					if (result) {
+						throw BreakException;
+					}
+				}
+			}
+		} catch (e) {
+			var tagName = getNodeTagName($node);
+			if (isSingleChildInParent(tagName, $parent)) {
+				result += '/' + tagName;
+			} else {
+				result += createXPathWithIndex(tagName, getNodeXPathIndex($node), true);
+			}
+		}
+
+		if (!result) {
+			var areDistant = iteration > 1 ? true : false;
+			result = tryParentAndChildWithAttrs($node, $parent, areDistant);
+		}
+
+		if (!result) {
+			iteration = iteration + 1;
+			tryWithParent($node, getParent($parent), iteration);
+		}
+	}
+	return result;
+}
+
 function findXPath() {
 	if (!isDocumentValid) {
 		return;
@@ -175,7 +222,7 @@ function findXPath() {
 
 	if (!result) {
 		try {
-			for (var i = 0; i < attributesLength; i++) {
+			for (i = 0; i < attributesLength; i++) {
 				if ($node.attr(attributes[i])) {
 					result = findSingleEntryXPath($node, attributes[i], tagName);
 					if (result) {
@@ -191,29 +238,7 @@ function findXPath() {
 	}
 
 	if (!result) {
-		var $parent = $node.parentNode ? $node.parentNode : $node.parent();
-		var parentTagName = getNodeTagName($parent);
-		
-		try {
-			for (var i = 0; i < attributesLength; i++) {
-				if ($parent.attr(attributes[i])) {
-					result = findSingleEntryXPath($parent, attributes[i], parentTagName);
-					if (result) {
-						throw BreakException;
-					}
-				}
-			}
-		} catch (e) {
-			if (isSingleChildInParent(tagName, $parent)) {
-				result += '/' + tagName;
-			} else {
-				result += createXPathWithIndex(tagName, nodeIndex, true);
-			}
-		}
-	}
-
-	if (!result) {
-		result = tryPatentAndChildWithAttrs($node, $parent);
+		result = tryWithParent($node);
 	}
 
 	$xpathInput.val(result);
