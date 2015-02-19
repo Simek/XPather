@@ -23,7 +23,7 @@ function getNodeXPathIndex($node, tagName) {
 
 function getBestNode(currentSelection) {
 	var $matchedNodes = $('body').find('*').filter(function () {
-		return filteredTagNames.indexOf(getNodeTagName($(this))) === -1 && $(this).text().indexOf(currentSelection) !== -1;
+		return $(this).text().indexOf(currentSelection) !== -1;
 	});
 
 	if ($matchedNodes.length === 0) {
