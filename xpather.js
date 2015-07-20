@@ -63,17 +63,19 @@ function hideXPather() {
 function find(force) {
 	var xpath = $xpathInput.val();
 
+	if (previousXPath === xpath && force !== true) {
+		return;
+	}
+	
+	previousXPath = xpath;
+
+	$sidebarEntries.empty();
+	clearHighlight();
+	
 	if (xpath.length === 0) {
 		$resultBox.addClass('xpather-no-results').text('');
 		return;
 	}
-
-	if (previousXPath === xpath && force !== true) {
-		return;
-	}
-
-	$sidebarEntries.empty();
-	clearHighlight();
 
 	var result;
 
@@ -84,8 +86,6 @@ function find(force) {
 		$sidebarEntries.empty().append(createSidebarErrorEntry(e.message));
 		return;
 	}
-
-	previousXPath = xpath;
 
 	if (result.length !== 0) {
 		if (result[0] instanceof Object) {
