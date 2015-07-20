@@ -4,7 +4,7 @@
 	"description": "Chrome extension for XPath operations on current document, reliable and easy to use with fully featured XPath 2.0 support.",
 	"author": "Bartek 'Simek' Kaszubowski",
 	"homepage_url": "https://github.com/Simek/XPather",
-	"version": "0.7.3",
+	"version": "0.7.5",
 
 	"browser_action": {
 		"default_title": "Toggle XPather",
