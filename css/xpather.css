@@ -190,7 +190,15 @@
 	line-height: 23px;
 }
 
-.xpather-highlight, .xpather-highlight-with-sepia, .xpather-text-hightlight {
+.xpather-sidebar-entry-error,
+.xpather-sidebar-entry-error:hover {
+	color: #ff4630 !important;
+	cursor: default;
+}
+
+.xpather-highlight, 
+.xpather-highlight-with-sepia, 
+.xpather-text-hightlight {
 	z-index: 99999;
 	border-bottom: 1px solid rgb(170, 130, 10);
 	background-color: rgba(237, 194, 20, .25);

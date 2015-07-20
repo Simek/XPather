@@ -63,6 +63,11 @@ function hideXPather() {
 function find(force) {
 	var xpath = $xpathInput.val();
 
+	if (xpath.length === 0) {
+		$resultBox.addClass('xpather-no-results').text('');
+		return;
+	}
+
 	if (previousXPath === xpath && force !== true) {
 		return;
 	}
@@ -75,7 +80,8 @@ function find(force) {
 	try {
 		result = $doc.xpath(xpath);
 	} catch(e) {
-		$resultBox.addClass('xpather-no-results').text('Invalid XPath').attr("title", e.message);
+		$resultBox.addClass('xpather-no-results').text('Invalid XPath');
+		$sidebarEntries.empty().append(createSidebarErrorEntry(e.message));
 		return;
 	}
 
@@ -134,10 +140,19 @@ function findWithDelay() {
 	}, 400));
 }
 
+function createSidebarErrorEntry(error) {
+	return $('<div class="xpather-sidebar-entry xpather-sidebar-entry-error">' + error + '</div>');
+}
+
 function createSidebarEntry(index, node, type) {
 	var text = '', className = '';
 	var isAttribute = type === 'attribute';
+	var isError = type === 'error';
 	var addFader = false;
+
+	if (isError) {
+		return createSidebarErrorEntry(error)
+	}
 
 	if (isAttribute) {
 		text = node[0].value;
@@ -150,7 +165,7 @@ function createSidebarEntry(index, node, type) {
 		if (!hasText) {
 			className = 'xpather-sidebar-entry-info';
 		}
-		
+
 		if (type === 'element' && hasCSSContent(node, children) && !hasText) {
 			text = 'FONT ICON';
 		} else if ((type === 'element' && node[0].nodeName === 'IMG') || (nodeHasImage(node, children) && !hasText)) {
