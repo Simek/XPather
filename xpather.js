@@ -265,8 +265,13 @@ function getSafeOffset(node) {
 	return offsetTop < 150 ? 0 : offsetTop - 150;
 }
 
-function collectTextNodes(element, texts) {
-	for (var child = element.firstChild; child !== null; child = child.nextSibling) {
+function simpleEscapeHTML(text) {
+	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function collectTextNodes(node, texts) {
+	var child = node.firstChild;
+	for (child; child !== null; child = child.nextSibling) {
 		if (child.nodeType === 3) {
 			texts.push(child);
 		} else if (child.nodeType === 1) {
@@ -277,6 +282,13 @@ function collectTextNodes(element, texts) {
 
 function getNodeText(node) {
 	var texts = [];
+	if (node.firstChild) {
+		collectTextNodes(node, texts);
+		for (var i = texts.length; i-- > 0;) {
+			texts[i] = simpleEscapeHTML(texts[i].data);
+		}
+	} else {
+		texts.push(node.textContent);
 	}
 	return  $.trim(texts.join(' ').replace(/\s+/g, ' '));
 }
