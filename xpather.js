@@ -275,11 +275,8 @@ function collectTextNodes(element, texts) {
 	}
 }
 
-function getNodeText(element) {
+function getNodeText(node) {
 	var texts = [];
-	collectTextNodes(element, texts);
-	for (var i = texts.length; i-- > 0;) {
-		texts[i] = texts[i].data;
 	}
 	return  $.trim(texts.join(' ').replace(/\s+/g, ' '));
 }
