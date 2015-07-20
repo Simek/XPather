@@ -156,7 +156,7 @@ function createSidebarEntry(index, node, type) {
 		} else if ((type === 'element' && node[0].nodeName === 'IMG') || (nodeHasImage(node, children) && !hasText)) {
 			text = 'IMAGE';
 		} else if (hasText) {
-			text = getNodeText(node);
+			text = getNodeText(node[0]);
 			addFader = hasText && nodeText.length > 220;
 		} else if (!/\S/.test(nodeText)) {
 			text = 'WHITESPACES';
@@ -165,7 +165,7 @@ function createSidebarEntry(index, node, type) {
 		}
 	}
 
-	var entryContent = '<div class="{className}"><span/>{fade}<div class="xpather-sidebar-entry-count">{i}</div></div>'.supplant({
+	var entryContent = '<div class="{className}">{text}{fade}<div class="xpather-sidebar-entry-count">{i}</div></div>'.supplant({
 		className: 'xpather-sidebar-entry ' + className,
 		text: text,
 		fade: addFader ? '<div class="xpather-sidebar-entry-fade" />' : '',
@@ -173,7 +173,6 @@ function createSidebarEntry(index, node, type) {
 	});
 
 	var $entry = $(entryContent);
-	$entry.text(text);
 
 	if (!isAttribute) {
 		$entry.bind('click', function () {
@@ -251,8 +250,23 @@ function getSafeOffset(node) {
 	return offsetTop < 150 ? 0 : offsetTop - 150;
 }
 
-function getNodeText(node) {
-	return $.trim(node.text().replace(/\s+/g, ' '));
+function collectTextNodes(element, texts) {
+	for (var child = element.firstChild; child !== null; child = child.nextSibling) {
+		if (child.nodeType === 3) {
+			texts.push(child);
+		} else if (child.nodeType === 1) {
+			collectTextNodes(child, texts);
+		}
+	}
+}
+
+function getNodeText(element) {
+	var texts = [];
+	collectTextNodes(element, texts);
+	for (var i = texts.length; i-- > 0;) {
+		texts[i] = texts[i].data;
+	}
+	return  $.trim(texts.join(' ').replace(/\s+/g, ' '));
 }
 
 function inputAutocomplete() {
